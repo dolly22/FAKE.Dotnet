@@ -1,0 +1,8 @@
+REFERENCES: STRICT
+REDIRECTS: OFF
+IMPORT-TARGETS: FALSE
+NUGET
+  remote: https://www.nuget.org/api/v2
+  specs:
+    FAKE.Core (4.20.0)
+    NuGet.CommandLine (3.3.0)
