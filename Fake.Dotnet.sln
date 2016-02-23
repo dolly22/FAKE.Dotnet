@@ -3,7 +3,12 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FakeDotnet", "src\FakeDotnet\FakeDotnet.fsproj", "{CDA30129-14F6-444B-80B0-E8E608716570}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fake.Dotnet", "src\Fake.Dotnet\Fake.Dotnet.fsproj", "{CDA30129-14F6-444B-80B0-E8E608716570}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{3FEB1C41-738B-4838-80AB-805BB8042FA5}"
+	ProjectSection(SolutionItems) = preProject
+		samples\SampleSolution\scripts\build.fsx = samples\SampleSolution\scripts\build.fsx
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>FAKE.Dotnet</id>
+    <version>$version$</version>
+    <authors>Tomas Dolezal</authors>
+    <owners>dolly22</owners>
+    <projectUrl>https://github.com/dolly22/Fake.Dotnet</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>FAKE scripts for building dotnet cli projects.</description>
+    <language>en-US</language>
+    <tags>fake dotnet build make</tags>
+    <dependencies>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="src\Fake.Dotnet\bin\release\fsharp.data.*" target="tools" />
+    <file src="src\Fake.Dotnet\bin\release\fake.dotnet.*" target="tools" />
+  </files>
+</package>

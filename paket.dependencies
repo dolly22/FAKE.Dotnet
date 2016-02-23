@@ -1,3 +1,7 @@
 source https://www.nuget.org/api/v2
-nuget FAKE
-nuget FSharp.Data
+
+nuget NuGet.CommandLine 3.3.0
+nuget FAKE 4.20.0
+nuget FAKE.Lib 4.20.0
+nuget FSharp.Data 2.2.5
+nuget FSharp.Formatting.CommandTool 2.14.0

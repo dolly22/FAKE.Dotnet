@@ -1,8 +1,15 @@
 ﻿#I "packages/FAKE.Core/tools/"
 #r "FakeLib.dll"
 
-// change to nuget source, or build FAKE.Dotnet debug library
-#r "../../../src/fakedotnet/bin/debug/fakedotnet.dll"
+// change to nuget source, or build Fake.Dotnet debug library
+
+// Debug build from visual studio output
+#I "../../../src/Fake.Dotnet/bin/Debug/"
+
+// Release build from build script output
+// #I "../../../artifacts/build/"
+
+#r "Fake.Dotnet.dll"
 
 open Fake
 open Dotnet
@@ -13,14 +20,14 @@ Target "Clean" (fun _ ->
 )
 
 Target "InstallDotnet" (fun _ ->
-    dotnetInstall false
+    DotnetCliInstall false
 )
 
 Target "BuildProjects" (fun _ ->
     !! "src/*/project.json" 
         |> Seq.iter(fun proj ->  
-            dotnetRestore id proj
-            dotnetPack (fun c -> 
+            DotnetRestore id proj
+            DotnetPack (fun c -> 
                 { c with 
                     Configuration = Debug;
                     VersionSuffix = Some "ci-100";

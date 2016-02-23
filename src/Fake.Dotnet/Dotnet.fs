@@ -6,13 +6,13 @@ open System
 open System.IO
 
 /// Dotnet cli installer script
-let dotnetCliInstaller = "https://raw.githubusercontent.com/dotnet/cli/rel/1.0.0/scripts/obtain/install.ps1"
+let private dotnetCliInstaller = "https://raw.githubusercontent.com/dotnet/cli/rel/1.0.0/scripts/obtain/install.ps1"
 
 /// Dotnet cli install directory
-let dotnetCliInstallDir = environVar "LocalAppData" @@ "Microsoft" @@ "dotnet"
+let private dotnetCliInstallDir = environVar "LocalAppData" @@ "Microsoft" @@ "dotnet"
 
 // Dotnet cli executable path
-let dotnetCliPath = dotnetCliInstallDir @@ "cli" @@ "bin" @@ "dotnet.exe"
+let private dotnetCliPath = dotnetCliInstallDir @@ "cli" @@ "bin" @@ "dotnet.exe"
 
 // Temporary path of installer script
 let private tempInstallerScript = Path.GetTempPath() @@ "dotnet_install.ps1"
@@ -24,7 +24,7 @@ let private downloadInstaller fileName =
     trace (sprintf "downloaded dotnet installer to %s" fileName)
     fileName
 
-let dotnetInstall (forceDownload: bool) =
+let DotnetCliInstall (forceDownload: bool) =
     let installScript = 
         match forceDownload || not(File.Exists(tempInstallerScript)) with
             | true -> downloadInstaller tempInstallerScript
@@ -53,7 +53,7 @@ type DotNetOptions =
         WorkingDirectory = currentDirectory
     }
 
-let dotnet (options: DotNetOptions) args = 
+let Dotnet (options: DotNetOptions) args = 
     let errors = new System.Collections.Generic.List<string>()
     let messages = new System.Collections.Generic.List<string>()
     let timeout = TimeSpan.MaxValue
@@ -105,13 +105,13 @@ let private buildRestoreArgs (param: DotNetRestoreOptions) =
         param.ConfigFile |> Option.toList |> argList2 "configFile"
     ] |> Seq.filter (not << String.IsNullOrEmpty) |> String.concat " "
 
-let dotnetRestore setParams project =    
-    traceStartTask "dotnet:restore" project
+let DotnetRestore setParams project =    
+    traceStartTask "Dotnet:restore" project
     let param = DotNetRestoreOptions.Default |> setParams    
     let args = sprintf "restore %s %s" project (buildRestoreArgs param)
-    let result = dotnet param.Common args    
+    let result = Dotnet param.Common args    
     if not result.OK then failwithf "dotnet restore failed with code %i" result.ExitCode
-    traceEndTask "dotnet:restore" project
+    traceEndTask "Dotnet:restore" project
 
 
 type PackConfiguration =
@@ -159,10 +159,10 @@ let private buildPackArgs (param: DotNetPackOptions) =
         (if param.NoBuild then "--no-build" else "")
     ] |> Seq.filter (not << String.IsNullOrEmpty) |> String.concat " "
 
-let dotnetPack setParams project =    
-    traceStartTask "dotnet:pack" project
+let DotnetPack setParams project =    
+    traceStartTask "Dotnet:pack" project
     let param = DotNetPackOptions.Default |> setParams    
     let args = sprintf "pack %s %s" project (buildPackArgs param)
-    let result = dotnet param.Common args    
+    let result = Dotnet param.Common args    
     if not result.OK then failwithf "dotnet pack failed with code %i" result.ExitCode
-    traceEndTask "dotnet:pack" project
+    traceEndTask "Dotnet:pack" project
