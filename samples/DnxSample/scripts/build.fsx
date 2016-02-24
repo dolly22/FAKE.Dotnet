@@ -12,34 +12,35 @@
 #r "Fake.Dotnet.dll"
 
 open Fake
-open Fake.Dotnet
+open Fake.Dnx
 
 Target "Clean" (fun _ ->
     !! "artifacts" ++ "src/*/bin" ++ "test/*/bin"
         |> DeleteDirs
 )
 
-Target "InstallDotnet" (fun _ ->
-    DotnetCliInstall id
+Target "UpgradeDnx" (fun _ ->
+    // upgrade to latest
+    DnvmUpgrade id    
 )
 
 Target "BuildProjects" (fun _ ->
+    let sdkVersion = GlobalJsonSdk "global.json"
+
+    //set sdk version from global.json
+    let runtimeOptions = { DnvmRuntimeOptions.Default with VersionOrAlias = sdkVersion };
+
     !! "src/*/project.json" 
         |> Seq.iter(fun proj ->  
-            DotnetRestore id proj
-            DotnetPack (fun c -> 
-                { c with 
-                    Configuration = Debug;
-                    VersionSuffix = Some "ci-100";
-                    OutputPath = Some (currentDirectory @@ "artifacts")
-                }) proj
+            DnuRestore (fun o -> { o with Runtime = runtimeOptions }) proj
         )
 )
 
-Target "Default"                        <| DoNothing
+
+Target "Default" <| DoNothing
 
 "Clean"
-    ==> "InstallDotnet"
+    ==> "UpgradeDnx"
     ==> "BuildProjects"
     ==> "Default"
 

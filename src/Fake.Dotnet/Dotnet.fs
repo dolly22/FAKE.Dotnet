@@ -80,7 +80,7 @@ let DotnetCliInstall setParams =
 
     if exitCode <> 0 then failwithf "dotnet install failed with code %i" exitCode
 
-type DotNetOptions =
+type DotnetOptions =
     {
         /// Path to dotnet.exe
         ToolPath: string;
@@ -93,7 +93,7 @@ type DotNetOptions =
         WorkingDirectory = currentDirectory
     }
 
-let Dotnet (options: DotNetOptions) args = 
+let Dotnet (options: DotnetOptions) args = 
     let errors = new System.Collections.Generic.List<string>()
     let messages = new System.Collections.Generic.List<string>()
     let timeout = TimeSpan.MaxValue
@@ -122,10 +122,10 @@ let private argList2 name values =
     |> Seq.collect (fun v -> ["--" + name; sprintf @"""%s""" v])
     |> String.concat " "
 
-type DotNetRestoreOptions =
+type DotnetRestoreOptions =
     {   
         /// Common tool options
-        Common: DotNetOptions;
+        Common: DotnetOptions;
         /// Nuget feeds to search updates in. Use default if empty.
         Sources: string list;
         /// Path to the nuget.exe.
@@ -134,20 +134,20 @@ type DotNetRestoreOptions =
 
     /// Parameter default values.
     static member Default = {
-        Common = DotNetOptions.Default
+        Common = DotnetOptions.Default
         Sources = []
         ConfigFile = None
     }
 
 /// [omit]
-let private buildRestoreArgs (param: DotNetRestoreOptions) =
+let private buildRestoreArgs (param: DotnetRestoreOptions) =
     [   param.Sources |> argList2 "source"
         param.ConfigFile |> Option.toList |> argList2 "configFile"
     ] |> Seq.filter (not << String.IsNullOrEmpty) |> String.concat " "
 
 let DotnetRestore setParams project =    
     traceStartTask "Dotnet:restore" project
-    let param = DotNetRestoreOptions.Default |> setParams    
+    let param = DotnetRestoreOptions.Default |> setParams    
     let args = sprintf "restore %s %s" project (buildRestoreArgs param)
     let result = Dotnet param.Common args    
     if not result.OK then failwithf "dotnet restore failed with code %i" result.ExitCode
@@ -162,7 +162,7 @@ type PackConfiguration =
 type DotNetPackOptions =
     {   
         /// Common tool options
-        Common: DotNetOptions;
+        Common: DotnetOptions;
         /// Pack configuration (--configuration)
         Configuration: PackConfiguration;
         /// Version suffix to use
@@ -177,7 +177,7 @@ type DotNetPackOptions =
 
     /// Parameter default values.
     static member Default = {
-        Common = DotNetOptions.Default
+        Common = DotnetOptions.Default
         Configuration = Release
         VersionSuffix = None
         BuildBasePath = None
