@@ -62,7 +62,7 @@
       <HintPath>..\..\packages\FAKE.Lib\lib\net451\FakeLib.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Data">
-      <HintPath>D:\Projects\FakeDotnet\packages\FSharp.Data\lib\portable-net40+sl5+wp8+win8\FSharp.Data.dll</HintPath>
+      <HintPath>..\..\packages\FSharp.Data\lib\portable-net40+sl5+wp8+win8\FSharp.Data.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Data.DesignTime">
       <HintPath>..\..\packages\FSharp.Data\lib\portable-net40+sl5+wp8+win8\FSharp.Data.DesignTime.dll</HintPath>
