@@ -1,9 +1,0 @@
-import_targets: false
-redirects: off
-references: strict
-
-source https://nuget.org/api/v2
-
-nuget NuGet.CommandLine 3.3.0
-nuget FAKE.Core 4.20.0
-

@@ -26,13 +26,20 @@ Target "UpgradeDnx" (fun _ ->
 
 Target "BuildProjects" (fun _ ->
     let sdkVersion = GlobalJsonSdk "global.json"
+    tracefn "Using global.json sdk version: %s" sdkVersion
 
     //set sdk version from global.json
-    let runtimeOptions = { DnvmRuntimeOptions.Default with VersionOrAlias = sdkVersion };
+    let setRuntimeOptions options = 
+        { options with 
+            VersionOrAlias = sdkVersion 
+        }
 
     !! "src/*/project.json" 
         |> Seq.iter(fun proj ->  
-            DnuRestore (fun o -> { o with Runtime = runtimeOptions }) proj
+            DnuRestore (fun o -> 
+                { o with 
+                    Runtime = o.Runtime |> setRuntimeOptions
+                }) proj
         )
 )
 
