@@ -5,7 +5,7 @@
     <version>$version$</version>
     <authors>Tomas Dolezal</authors>
     <owners>dolly22</owners>
-    <projectUrl>https://github.com/dolly22/Fake.Dotnet</projectUrl>
+    <projectUrl>https://github.com/dolly22/FAKE.Dotnet</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>FAKE scripts for building dotnet cli projects.</description>
     <language>en-US</language>
@@ -14,7 +14,7 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="src\Fake.Dotnet\bin\release\fsharp.data.*" target="tools" />
-    <file src="src\Fake.Dotnet\bin\release\fake.dotnet.*" target="tools" />
+    <file src="artifacts\build\fsharp.data.*" target="tools" />
+    <file src="artifacts\build\fake.dotnet.*" target="tools" />
   </files>
 </package>
