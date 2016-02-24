@@ -24,13 +24,53 @@ let private downloadInstaller fileName =
     trace (sprintf "downloaded dotnet installer to %s" fileName)
     fileName
 
-let DotnetCliInstall (forceDownload: bool) =
+type DotnetCliVersion =
+    | Latest
+    | Version of string
+    
+type DotNetCliInstallOptions =
+    {   
+        /// Always download install script (otherwise install script is cached in temporary folder)
+        AlwaysDownload: bool;
+        /// DotnetCli version
+        Version: DotnetCliVersion;
+        /// Distribution channel
+        Channel: string option;
+    }
+
+    /// Parameter default values.
+    static member Default = {
+        AlwaysDownload = false
+        Version = Latest
+        Channel = None
+    }
+
+let private optionToParam option paramFormat =
+    match option with
+    | Some value -> sprintf paramFormat value
+    | None -> ""
+
+/// [omit]
+let private buildDotnetCliInstallArgs (param: DotNetCliInstallOptions) =
+    let versionParam = 
+        match param.Version with
+        | Latest -> ""
+        | Version ver -> sprintf "-version '%s'" ver
+    [   
+        versionParam
+        optionToParam param.Channel "-channel '%s'"
+    ] |> Seq.filter (not << String.IsNullOrEmpty) |> String.concat " "
+
+
+let DotnetCliInstall setParams =
+    let param = DotNetCliInstallOptions.Default |> setParams  
+
     let installScript = 
-        match forceDownload || not(File.Exists(tempInstallerScript)) with
+        match param.AlwaysDownload || not(File.Exists(tempInstallerScript)) with
             | true -> downloadInstaller tempInstallerScript
             | false -> tempInstallerScript
 
-    let args = sprintf "-NoProfile -NoLogo -Command \"%s; exit $LastExitCode;\"" installScript
+    let args = sprintf "-NoProfile -NoLogo -Command \"%s %s; exit $LastExitCode;\"" installScript (buildDotnetCliInstallArgs param)
     let exitCode = 
         ExecProcess (fun info ->
             info.FileName <- "powershell"

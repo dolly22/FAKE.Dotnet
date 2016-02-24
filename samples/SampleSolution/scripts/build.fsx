@@ -20,7 +20,7 @@ Target "Clean" (fun _ ->
 )
 
 Target "InstallDotnet" (fun _ ->
-    DotnetCliInstall false
+    DotnetCliInstall id
 )
 
 Target "BuildProjects" (fun _ ->
