@@ -11,7 +11,7 @@ See the [API documentation](http://dolly22.github.io/fake.dotnet/index.html).
 open Fake.Dotnet 
 	
 Target "Initialize" (fun _ ->
-    DotnetCliInstall false
+    DotnetCliInstall id
 )
 
 Target "BuildProjects" (fun _ ->
