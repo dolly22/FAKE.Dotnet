@@ -1,2 +1,2 @@
-#### 1.0.0-pre - TBD
+#### 1.0.0-rc - TBD
 * Initial version released to nuget

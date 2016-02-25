@@ -3,7 +3,7 @@ open System.Reflection
 
 [<assembly: AssemblyVersionAttribute("1.0.0")>]
 [<assembly: AssemblyFileVersionAttribute("1.0.0")>]
-[<assembly: AssemblyInformationalVersionAttribute("1.0.0-pre")>]
+[<assembly: AssemblyInformationalVersionAttribute("1.0.0-rc")>]
 do ()
 
 module internal AssemblyVersionInformation =
