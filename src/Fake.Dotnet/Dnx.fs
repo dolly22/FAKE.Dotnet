@@ -122,6 +122,11 @@ let Dnu setOptions command =
     DnvmExec setOptions args
     traceEndTask "Dnu" "command"
 
+/// [omit]
+let private argList2 name values =
+    values
+    |> Seq.collect (fun v -> ["--" + name; sprintf @"""%s""" v])
+    |> String.concat " "
 
 type DnuRestoreParams =
     {
@@ -141,7 +146,103 @@ let DnuRestore setParams project =
     Dnu (fun o -> options.Runtime) args
     traceEndTask "Dnu:restore" project
 
+
+type PublishConfiguration =
+    | Debug
+    | Release
+    | Custom of string
+
+type DnuPublishParams =
+    {
+        /// Dnvm runtime options
+        Runtime: DnvmRuntimeOptions;
+        /// Configuration (--configuration)
+        Configuration: PublishConfiguration;
+        /// Output path (--output)
+        OutputPath: string option;
+        /// No source flag (--no-source)
+        NoSource: bool;
+        /// Quiet flag (--quiet)
+        Quiet: bool;
+        /// Include symbols flag (--include-symbols)
+        IncludeSymbols: bool;
+    }
+
+    static member Default = {
+        Runtime = DnvmRuntimeOptions.Default
+        Configuration = Release
+        OutputPath = None
+        NoSource = false
+        Quiet = false
+        IncludeSymbols = true
+    }
+
+/// [omit]
+let private buildPublishArgs (param: DnuPublishParams) =
+    [  
+        sprintf "--configuration %s" 
+            (match param.Configuration with
+            | Debug -> "Debug"
+            | Release -> "Release"
+            | Custom config -> config)
+        param.OutputPath |> Option.toList |> argList2 "out"
+        (if param.NoSource then "--no-source" else "")
+        (if param.Quiet then "--quiet" else "")
+        (if param.IncludeSymbols then "--include-symbols" else "")
+    ] |> Seq.filter (not << String.IsNullOrEmpty) |> String.concat " "
+
+// dnu publish command
+let DnuPublish setParams project =    
+    traceStartTask "Dnu:publish" project
+    let options = DnuPublishParams.Default |> setParams
+    let args = sprintf "publish %s %s" project (buildPublishArgs options)
+    Dnu (fun o -> options.Runtime) args
+    traceEndTask "Dnu:publish" project
+
+
+type DnuPackParams =
+    {
+        /// Dnvm runtime options
+        Runtime: DnvmRuntimeOptions;
+        /// Configuration (--configuration)
+        Configuration: PublishConfiguration;
+        /// Output path (--output)
+        OutputPath: string option;
+    }
+
+    static member Default = {
+        Runtime = DnvmRuntimeOptions.Default
+        Configuration = Release
+        OutputPath = None
+    }
+
+/// [omit]
+let private buildPackArgs (param: DnuPackParams) =
+    [  
+        sprintf "--configuration %s" 
+            (match param.Configuration with
+            | Debug -> "Debug"
+            | Release -> "Release"
+            | Custom config -> config)
+        param.OutputPath |> Option.toList |> argList2 "out"
+    ] |> Seq.filter (not << String.IsNullOrEmpty) |> String.concat " "
+
+
+// dnu pack command
+let DnuPack setParams project =    
+    traceStartTask "Dnu:pack" project
+    let options = DnuPackParams.Default |> setParams
+    let args = sprintf "pack %s %s" project (buildPackArgs options)
+    Dnu (fun o -> options.Runtime) args
+    traceEndTask "Dnu:pack" project
+
+
 let GlobalJsonSdk project =
     let data = ReadFileAsString project
     let info = JsonValue.Parse(data)
     info?sdk?version.AsString()    
+
+
+let SetDnxVersionSuffix version =
+    setEnvironVar "DNX_BUILD_VERSION" version
+    

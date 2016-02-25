@@ -34,11 +34,24 @@ Target "BuildProjects" (fun _ ->
             VersionOrAlias = sdkVersion 
         }
 
+    // set version suffix for project.json version template (1.0.0-*)
+    SetDnxVersionSuffix "ci-100"
+
     !! "src/*/project.json" 
         |> Seq.iter(fun proj ->  
+
+            // restore packages
             DnuRestore (fun o -> 
                 { o with 
                     Runtime = o.Runtime |> setRuntimeOptions
+                }) proj
+
+            // build (pack) project and generate outputs
+            DnuPack (fun o -> 
+                { o with 
+                    Runtime = o.Runtime |> setRuntimeOptions
+                    Configuration = Release
+                    OutputPath = Some (currentDirectory @@ "artifacts")
                 }) proj
         )
 )

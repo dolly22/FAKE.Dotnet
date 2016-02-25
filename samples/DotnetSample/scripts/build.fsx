@@ -26,7 +26,11 @@ Target "InstallDotnet" (fun _ ->
 Target "BuildProjects" (fun _ ->
     !! "src/*/project.json" 
         |> Seq.iter(fun proj ->  
+
+            // restore project dependencies
             DotnetRestore id proj
+
+            // build project and produce outputs
             DotnetPack (fun c -> 
                 { c with 
                     Configuration = Debug;
