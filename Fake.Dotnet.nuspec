@@ -6,6 +6,7 @@
     <authors>Tomas Dolezal</authors>
     <owners>dolly22</owners>
     <projectUrl>https://github.com/dolly22/FAKE.Dotnet</projectUrl>
+    <licenseUrl>https://github.com/dolly22/FAKE.Dotnet/blob/master/LICENCE.md</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>FAKE build helpers for building using dotnet cli and DNX.</description>
     <language>en-US</language>
