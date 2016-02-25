@@ -27,10 +27,11 @@ Target "UpdateVersion" (fun _ ->
 
     let prereleaseInfo = 
         match (releaseNotes.SemVer.PreRelease, buildCounter) with
-        | (Some ver, Some build) ->             
+        | (Some ver, Some build) ->          
+            let versionWithBuild = sprintf "%s-%s" ver.Origin build           
             Some {
-                PreRelease.Origin = sprintf "%s-%s" ver.Origin build
-                Name = ""
+                PreRelease.Origin = versionWithBuild
+                Name = versionWithBuild
                 Number = None
             }
         | (Some ver, None) -> 
