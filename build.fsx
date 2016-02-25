@@ -5,6 +5,7 @@ open Fake
 open Fake.FSharpFormatting
 open Fake.ReleaseNotesHelper
 open Fake.AssemblyInfoFile
+open Fake.SemVerHelper
 
 let authors = ["Tomas Dolezal"]
 
@@ -22,7 +23,19 @@ Target "Clean" (fun _ ->
 Target "UpdateVersion" (fun _ ->   
     tracefn "Release notes version: %s" releaseNotes.NugetVersion
 
-    //TODO: add ci prerelease
+    let buildCounter = environVarOrNone "BuildCounter"
+
+    let prereleaseInfo = 
+        match (releaseNotes.SemVer.PreRelease, buildCounter) with
+        | (Some ver, Some build) ->             
+            Some {
+                PreRelease.Origin = sprintf "%s-%s" ver.Origin build
+                Name = ""
+                Number = None
+            }
+        | (Some ver, None) -> 
+            Some ver
+        | (_, _) -> None
 
     // update version info file
     CreateFSharpAssemblyInfo "src/SolutionInfo.fs"
@@ -30,7 +43,8 @@ Target "UpdateVersion" (fun _ ->
             Attribute.FileVersion releaseNotes.AssemblyVersion
             Attribute.InformationalVersion releaseNotes.NugetVersion ]
 
-    version <- Some releaseNotes.SemVer
+    version <- Some { releaseNotes.SemVer with PreRelease = prereleaseInfo }
+    tracefn "Using version: %A" version.Value
 )
 
 Target "BuildProjects" (fun _ ->
@@ -52,16 +66,16 @@ Target "GenerateDocs" (fun _ ->
     let toolRoot = "./packages/FSharp.Formatting.CommandTool";
     let templatesDir = toolRoot @@ "templates/reference/"
 
-    let githubLink = "https://github.com/dolly22/fake.dotnet"
+    let githubLink = "https://github.com/dolly22/FAKE.Dotnet"
     let projInfo =
-      [ "page-description", "FAKE - dotnet cli"
+      [ "page-description", "FAKE.Dotnet"
         "page-author", separated ", " authors
         "project-author", separated ", " authors
         "github-link", githubLink
         "project-github", githubLink
         "project-nuget", "https://www.nuget.org/packages/FAKE.Dotnet"
-        "root", "http://dolly22.github.io/fake.dotnet"
-        "project-name", "FAKE - dotnet cli" ]
+        "root", "http://dolly22.github.io/Fake.Dotnet"
+        "project-name", "FAKE.Dotnet" ]
 
     CreateDir docsDir
 

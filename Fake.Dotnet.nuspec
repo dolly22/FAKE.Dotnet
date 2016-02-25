@@ -7,9 +7,9 @@
     <owners>dolly22</owners>
     <projectUrl>https://github.com/dolly22/FAKE.Dotnet</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>FAKE scripts for building dotnet cli projects.</description>
+    <description>FAKE build helpers for building using dotnet cli and DNX.</description>
     <language>en-US</language>
-    <tags>fake dotnet build make</tags>
+    <tags>fake dotnet cli dnx build make</tags>
     <dependencies>
     </dependencies>
   </metadata>

@@ -1,6 +1,6 @@
 # FAKE.Dotnet
 
-"FAKE.Dotnet" is FAKE build automation system extension for [dotnet cli](http://github.com/dotnet/cli) and it's predecessor [DNX](https://github.com/aspnet/dnx).
+"FAKE.Dotnet" is FAKE build automation system extension for [dotnet cli](http://github.com/dotnet/cli) and it's predecessor [DNX](https://github.com/aspnet/dnx). Currently supports only windows.
 
 See the [API documentation](http://dolly22.github.io/fake.dotnet/index.html) for all available helpers.
 
