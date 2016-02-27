@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>DnuRestoreParams - FAKE.Dotnet</title>
+    <title>DnvmOptions - FAKE.Dotnet</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="Tomas Dolezal">
@@ -12,8 +12,8 @@
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
-    <link type="text/css" rel="stylesheet" href="http://dolly22.github.io/Fake.Dotnet/content/style.css" />
-    <script type="text/javascript" src="http://dolly22.github.io/Fake.Dotnet/content/tips.js"></script>
+    <link type="text/css" rel="stylesheet" href="http://dolly22.github.io/FAKE.Dotnet/content/style.css" />
+    <script type="text/javascript" src="http://dolly22.github.io/FAKE.Dotnet/content/tips.js"></script>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -25,7 +25,7 @@
         <ul class="nav nav-pills pull-right">
           <li><a href="http://fsharp.org">fsharp.org</a></li>
         </ul>
-        <h3 class="muted"><a href="http://dolly22.github.io/Fake.Dotnet/index.html">FAKE.Dotnet</a></h3>
+        <h3 class="muted"><a href="http://dolly22.github.io/FAKE.Dotnet/index.html">FAKE.Dotnet</a></h3>
       </div>
       <hr />
       <div class="row">
@@ -34,7 +34,7 @@
 
 
 
-<h1>DnuRestoreParams</h1>
+<h1>DnvmOptions</h1>
 <p>
   <span>Namespace: Fake</span><br />
   <span>Parent Module: <a href="fake-dnx.html">Dnx</a></span>
@@ -50,19 +50,59 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '27', 27)" onmouseover="showTip(event, '27', 27)">
-            Runtime
+          <code onmouseout="hideTip(event, '29', 29)" onmouseover="showTip(event, '29', 29)">
+            AutoInstall
           </code>
-          <div class="tip" id="27">
-            <strong>Signature:</strong> DnvmRuntimeOptions<br />
+          <div class="tip" id="29">
+            <strong>Signature:</strong> bool<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/master/src/Fake.Dotnet/Dnx.fs#L134-134" class="github-link">
+            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/master/src/Fake.Dotnet/Dnx.fs#L54-54" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Dnvm runtime options</p>
+          <p>Automatically install dnvm if not found</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '30', 30)" onmouseover="showTip(event, '30', 30)">
+            ToolPath
+          </code>
+          <div class="tip" id="30">
+            <strong>Signature:</strong> string<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/master/src/Fake.Dotnet/Dnx.fs#L50-50" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Path to dnvm.cmd</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '31', 31)" onmouseover="showTip(event, '31', 31)">
+            WorkingDirectory
+          </code>
+          <div class="tip" id="31">
+            <strong>Signature:</strong> string<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/master/src/Fake.Dotnet/Dnx.fs#L52-52" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Command working directory</p>
 
 
         </td>
@@ -78,15 +118,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '28', 28)" onmouseover="showTip(event, '28', 28)">
+          <code onmouseout="hideTip(event, '32', 32)" onmouseover="showTip(event, '32', 32)">
             Default
           </code>
-          <div class="tip" id="28">
-            <strong>Signature:</strong> DnuRestoreParams<br />
+          <div class="tip" id="32">
+            <strong>Signature:</strong> DnvmOptions<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/master/src/Fake.Dotnet/Dnx.fs#L137-137" class="github-link">
+            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/master/src/Fake.Dotnet/Dnx.fs#L57-57" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -99,8 +139,8 @@
 
         </div>
         <div class="span3">
-          <a href="http://dolly22.github.io/Fake.Dotnet/index.html">
-            <img src="http://dolly22.github.io/Fake.Dotnet/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
+          <a href="http://dolly22.github.io/FAKE.Dotnet/index.html">
+            <img src="http://dolly22.github.io/FAKE.Dotnet/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
           </a>
 
           <ul class="nav nav-list" id="menu">
@@ -113,6 +153,9 @@
             <li><a href="https://github.com/dolly22/FAKE.Dotnet">GitHub page</a></li>
             <li><a href="https://github.com/dolly22/FAKE.Dotnet/blob/master/license.md">License</a></li>
             <li><a href="https://github.com/dolly22/FAKE.Dotnet/blob/master/release_notes.md">Release Notes</a></li>
+
+            <li class="nav-header">Reference</li>
+            <li><a href="http://dolly22.github.io/FAKE.Dotnet/apidocs/index.html">API Reference</a></li>
 
           </ul>
         </div>
