@@ -8,11 +8,11 @@ open System.IO
 /// Dotnet cli installer script
 let private dotnetCliInstaller = "https://raw.githubusercontent.com/dotnet/cli/rel/1.0.0/scripts/obtain/install.ps1"
 
-/// Dotnet cli install directory
-let private dotnetCliInstallDir = environVar "LocalAppData" @@ "Microsoft" @@ "dotnet"
+/// Dotnet cli default install directory (windows)
+let mutable DefaultDotnetCliDir = environVar "LocalAppData" @@ "Microsoft" @@ "dotnet"
 
 // Dotnet cli executable path
-let private dotnetCliPath = dotnetCliInstallDir @@ "cli" @@ "bin" @@ "dotnet.exe"
+let private dotnetCliPath installDir = installDir @@ "cli" @@ "bin" @@ "dotnet.exe"
 
 // Temporary path of installer script
 let private tempInstallerScript = Path.GetTempPath() @@ "dotnet_install.ps1"
@@ -36,6 +36,8 @@ type DotNetCliInstallOptions =
         Version: DotnetCliVersion;
         /// Distribution channel
         Channel: string option;
+        /// Custom installation directory (for local build installation)
+        InstallDirectory: string option
     }
 
     /// Parameter default values.
@@ -43,6 +45,7 @@ type DotNetCliInstallOptions =
         AlwaysDownload = false
         Version = Latest
         Channel = None
+        InstallDirectory = None
     }
 
 let private optionToParam option paramFormat =
@@ -70,6 +73,10 @@ let DotnetCliInstall setParams =
             | true -> downloadInstaller tempInstallerScript
             | false -> tempInstallerScript
 
+    // set custom install directory
+    if param.InstallDirectory.IsSome then
+        setEnvironVar "DOTNET_INSTALL_DIR" param.InstallDirectory.Value
+
     let args = sprintf "-NoProfile -NoLogo -Command \"%s %s; exit $LastExitCode;\"" installScript (buildDotnetCliInstallArgs param)
     let exitCode = 
         ExecProcess (fun info ->
@@ -82,14 +89,14 @@ let DotnetCliInstall setParams =
 
 type DotnetOptions =
     {
-        /// Path to dotnet.exe
-        ToolPath: string;
+        /// Dotnet cli install directory
+        DotnetDirectory: string;
         /// Command working directory
         WorkingDirectory: string;
     }
 
     static member Default = {
-        ToolPath = dotnetCliPath
+        DotnetDirectory = DefaultDotnetCliDir
         WorkingDirectory = currentDirectory
     }
 
@@ -108,7 +115,7 @@ let Dotnet (options: DotnetOptions) args =
 
     let result = 
         ExecProcessWithLambdas (fun info ->
-            info.FileName <- options.ToolPath
+            info.FileName <- dotnetCliPath options.DotnetDirectory
             info.WorkingDirectory <- options.WorkingDirectory
             info.Arguments <- args
         ) timeout true errorF messageF
