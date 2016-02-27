@@ -78,7 +78,7 @@ Target "GenerateDocs" (fun _ ->
         "github-link", githubLink
         "project-github", githubLink
         "project-nuget", "https://www.nuget.org/packages/FAKE.Dotnet"
-        "root", "http://dolly22.github.io/Fake.Dotnet"
+        "root", "http://dolly22.github.io/FAKE.Dotnet"
         "project-name", "FAKE.Dotnet" ]
 
     CreateDir docsDir
@@ -86,9 +86,24 @@ Target "GenerateDocs" (fun _ ->
     let dllFiles = 
         [ buildDir @@ "Fake.Dotnet.dll" ]
 
-    CreateDocsForDlls docsDir templatesDir (projInfo @ ["--libDirs", buildDir]) (githubLink + "/blob/master") dllFiles
+    let apiDocsDir = docsDir @@ "apidocs"
+    CreateDir apiDocsDir
+
+    CreateDocsForDlls apiDocsDir templatesDir (projInfo @ ["--libDirs", buildDir]) (githubLink + "/blob/master") dllFiles
 
     CopyDir (docsDir @@ "content") "help/content" allFiles
+)
+
+Target "UpdateDocs" (fun _ ->
+    let githubPagesDir = currentDirectory @@ "gh-pages"
+
+    CleanDir githubPagesDir
+    cloneSingleBranch "" "https://github.com/dolly22/FAKE.Dotnet" "gh-pages" githubPagesDir
+
+    fullclean githubPagesDir
+    CopyRecursive docsDir githubPagesDir true |> printfn "%A"
+    StageAll githubPagesDir
+    Commit githubPagesDir (sprintf "Update generated documentation %s" <| version.Value.ToString())
 )
 
 Target "NugetPack" (fun _ -> 
@@ -116,6 +131,7 @@ Target "Default" <| DoNothing
     ==> "BuildProjects"
     ==> "NugetPack"
     ==> "GenerateDocs"
+    =?> ("UpdateDocs", hasBuildParam "--update-docs")
     ==> "Default"
 
 // start build
