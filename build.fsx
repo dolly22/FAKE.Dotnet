@@ -2,6 +2,7 @@
 #r "FakeLib.dll"
 
 open Fake
+open Fake.Git
 open Fake.FSharpFormatting
 open Fake.ReleaseNotesHelper
 open Fake.AssemblyInfoFile
@@ -23,21 +24,22 @@ Target "Clean" (fun _ ->
 Target "UpdateVersion" (fun _ ->   
     tracefn "Release notes version: %s" releaseNotes.NugetVersion
 
-    let buildCounter = environVarOrNone "BuildCounter"
+    // compute commit count
+    let repositoryDir = currentDirectory
+    let currentSha = getCurrentSHA1 repositoryDir
+    let comitCount = runSimpleGitCommand repositoryDir "rev-list --count HEAD"
 
     let prereleaseInfo = 
-        match (releaseNotes.SemVer.PreRelease, buildCounter) with
-        | (Some ver, Some build) ->     
-            let buildCounterFixed = build.PadLeft(3, '0')             
+        match releaseNotes.SemVer.PreRelease with
+        | Some ver ->     
+            let buildCounterFixed = comitCount.PadLeft(3, '0')             
             let versionWithBuild = sprintf "%s-%s" ver.Origin buildCounterFixed           
             Some {
                 PreRelease.Origin = versionWithBuild
                 Name = versionWithBuild
                 Number = None
             }
-        | (Some ver, None) -> 
-            Some ver
-        | (_, _) -> None
+        | _ -> None
 
     // update version info file
     CreateFSharpAssemblyInfo "src/SolutionInfo.fs"
