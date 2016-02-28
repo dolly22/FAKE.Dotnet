@@ -1,4 +1,5 @@
-﻿module Fake.Dnx
+﻿/// DNX helpers
+module Fake.Dnx
 
 open Fake
 open FSharp.Data
@@ -12,10 +13,10 @@ let private dnvmInstaller = "https://raw.githubusercontent.com/aspnet/Home/dev/d
 /// Dnx install directory
 let private dnxInstallDir = environVar "UserProfile" @@ ".dnx"
 
-// Dnvm executable path
+/// Dnvm executable path
 let private dnvmPath = dnxInstallDir @@ "bin" @@ "dnvm.cmd"
 
-// Temporary path of installer script
+/// Temporary path of installer script
 let private tempInstallerScript = Path.GetTempPath() @@ "dnvminstall.ps1"
 
 let private downloadInstaller fileName =  
@@ -25,7 +26,7 @@ let private downloadInstaller fileName =
     trace (sprintf "downloaded dnvm installer to %s" fileName)
     fileName
 
-
+/// Install DNX if needed
 let DnvmInstall forceInstall =
     if not (fileExists dnvmPath) || forceInstall then     
         let installScript = 
@@ -43,23 +44,30 @@ let DnvmInstall forceInstall =
 
         if exitCode <> 0 then failwithf "dnvm install failed with code %i" exitCode
 
-
+/// dnvm command common options
 type DnvmOptions =
     {
         /// Path to dnvm.cmd
         ToolPath: string;
         /// Command working directory
         WorkingDirectory: string;
-        /// Automatically install dnvm if not found
+        /// Automatically install dnvm if needed
         AutoInstall: bool
     }
 
+    /// Default options values
     static member Default = {
         ToolPath = dnvmPath
         WorkingDirectory = currentDirectory
         AutoInstall = true
     }
 
+
+/// Execute generic dnvm command
+/// ## Parameters
+///
+/// - 'setOptions' - set command options
+/// - 'args' - command arguments
 let Dnvm setOptions args = 
     let options = DnvmOptions.Default |> setOptions   
     if options.AutoInstall then
@@ -87,12 +95,16 @@ let Dnvm setOptions args =
     ProcessResult.New result messages errors
 
 /// dnvm upgrade command
+/// ## Parameters
+///
+/// - 'setOptions' - set command options
 let DnvmUpgrade setOptions =    
     traceStartTask "Dnvm" "upgrade"
     let result = Dnvm setOptions "upgrade"    
     if not result.OK then failwithf "dnvm upgrade failed with code %i" result.ExitCode
     traceEndTask "Dnvm" "upgrade"
 
+/// Common options for dnvm command over some specific sdk version
 type DnvmRuntimeOptions =
     {
         /// Common tool options
@@ -101,12 +113,17 @@ type DnvmRuntimeOptions =
         VersionOrAlias: string;
     }
 
+    /// Default command options
     static member Default = {
         Dnvm = DnvmOptions.Default
         VersionOrAlias = "default"
     }
 
 /// dnvm exec command
+/// ## Parameters
+///
+/// - 'setOptions' - set command options
+/// - 'command' - command to execute
 let DnvmExec setOptions command =    
     traceStartTask "Dnvm" "exec"    
     let options = DnvmRuntimeOptions.Default |> setOptions
@@ -116,6 +133,10 @@ let DnvmExec setOptions command =
     traceEndTask "Dnvm" "exec"
 
 /// dnu command
+/// ## Parameters
+///
+/// - 'setOptions' - set command options
+/// - 'command' - command to execute
 let Dnu setOptions command =    
     traceStartTask "Dnu" "command"    
     let args = sprintf "dnu %s" command
@@ -128,17 +149,23 @@ let private argList2 name values =
     |> Seq.collect (fun v -> ["--" + name; sprintf @"""%s""" v])
     |> String.concat " "
 
+/// dnu restore command options
 type DnuRestoreParams =
     {
         /// Dnvm runtime options
         Runtime: DnvmRuntimeOptions;
     }
 
+    /// Default param values
     static member Default = {
         Runtime = DnvmRuntimeOptions.Default
     }
 
 // dnu restore command
+/// ## Parameters
+///
+/// - 'setParams' - set command options
+/// - 'project' - project to restore
 let DnuRestore setParams project =    
     traceStartTask "Dnu:restore" project
     let options = DnuRestoreParams.Default |> setParams
@@ -146,18 +173,20 @@ let DnuRestore setParams project =
     Dnu (fun o -> options.Runtime) args
     traceEndTask "Dnu:restore" project
 
-
-type PublishConfiguration =
+/// Build configuration
+type BuildConfiguration =
     | Debug
     | Release
     | Custom of string
 
+
+/// Dnu publish command parameters
 type DnuPublishParams =
     {
         /// Dnvm runtime options
         Runtime: DnvmRuntimeOptions;
         /// Configuration (--configuration)
-        Configuration: PublishConfiguration;
+        Configuration: BuildConfiguration;
         /// Output path (--output)
         OutputPath: string option;
         /// No source flag (--no-source)
@@ -168,6 +197,7 @@ type DnuPublishParams =
         IncludeSymbols: bool;
     }
 
+    /// Default parameter values
     static member Default = {
         Runtime = DnvmRuntimeOptions.Default
         Configuration = Release
@@ -191,7 +221,11 @@ let private buildPublishArgs (param: DnuPublishParams) =
         (if param.IncludeSymbols then "--include-symbols" else "")
     ] |> Seq.filter (not << String.IsNullOrEmpty) |> String.concat " "
 
-// dnu publish command
+/// dnu publish command
+/// ## Parameters
+///
+/// - 'setParams' - set command options
+/// - 'project' - project to restore
 let DnuPublish setParams project =    
     traceStartTask "Dnu:publish" project
     let options = DnuPublishParams.Default |> setParams
@@ -199,17 +233,18 @@ let DnuPublish setParams project =
     Dnu (fun o -> options.Runtime) args
     traceEndTask "Dnu:publish" project
 
-
+/// Dnu pack command parameters
 type DnuPackParams =
     {
         /// Dnvm runtime options
         Runtime: DnvmRuntimeOptions;
         /// Configuration (--configuration)
-        Configuration: PublishConfiguration;
+        Configuration: BuildConfiguration;
         /// Output path (--output)
         OutputPath: string option;
     }
 
+    /// Default parameter values
     static member Default = {
         Runtime = DnvmRuntimeOptions.Default
         Configuration = Release
@@ -228,7 +263,11 @@ let private buildPackArgs (param: DnuPackParams) =
     ] |> Seq.filter (not << String.IsNullOrEmpty) |> String.concat " "
 
 
-// dnu pack command
+/// dnu pack command
+/// ## Parameters
+///
+/// - 'setParams' - set command options
+/// - 'project' - project to pack
 let DnuPack setParams project =    
     traceStartTask "Dnu:pack" project
     let options = DnuPackParams.Default |> setParams
@@ -236,13 +275,19 @@ let DnuPack setParams project =
     Dnu (fun o -> options.Runtime) args
     traceEndTask "Dnu:pack" project
 
-
+/// get sdk version from global.json
+/// ## Parameters
+///
+/// - 'project' - global.json path
 let GlobalJsonSdk project =
     let data = ReadFileAsString project
     let info = JsonValue.Parse(data)
     info?sdk?version.AsString()    
 
-
+/// set version suffix for 1.0.0-* format
+/// ## Parameters
+///
+/// - 'version' - version suffix to set
 let SetDnxVersionSuffix version =
     setEnvironVar "DNX_BUILD_VERSION" version
     

@@ -1,4 +1,5 @@
-﻿module Fake.Dotnet
+﻿/// dotnet cli helpers
+module Fake.Dotnet
 
 open Fake
 open FSharp.Data
@@ -183,7 +184,7 @@ let DotnetRestore setParams project =
     if not result.OK then failwithf "dotnet restore failed with code %i" result.ExitCode
     traceEndTask "Dotnet:restore" project
 
-// build configuration
+/// build configuration
 type BuildConfiguration =
     | Debug
     | Release
@@ -197,7 +198,7 @@ let private buildConfigurationArg (param: BuildConfiguration) =
         | Release -> "Release"
         | Custom config -> config)
 
-// dotnet pack command options
+/// dotnet pack command options
 type DotNetPackOptions =
     {   
         /// Common tool options
@@ -249,7 +250,7 @@ let DotnetPack setParams project =
     traceEndTask "Dotnet:pack" project
 
 
-// dotnet publish command options
+/// dotnet publish command options
 type DotNetPublishOptions =
     {   
         /// Common tool options
@@ -301,7 +302,7 @@ let DotnetPublish setParams project =
     traceEndTask "Dotnet:publish" project
 
 
-// dotnet compile command options
+/// dotnet compile command options
 type DotNetCompileOptions =
     {   
         /// Common tool options
