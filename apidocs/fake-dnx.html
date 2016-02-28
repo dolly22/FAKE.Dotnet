@@ -39,6 +39,8 @@
   <span>Namespace: Fake</span><br />
 </p>
 <div class="xmldoc">
+<p>DNX helpers</p>
+
 </div>
 
 <!-- Render nested types and modules, if there are any -->
@@ -51,39 +53,51 @@
     <tbody>
         <tr>
           <td class="type-name">
+            <a href="fake-dnx-buildconfiguration.html">BuildConfiguration</a>
+          </td>
+          <td class="xmldoc"><p>Build configuration</p>
+
+</td>
+        </tr>
+        <tr>
+          <td class="type-name">
             <a href="fake-dnx-dnupackparams.html">DnuPackParams</a>
           </td>
-          <td class="xmldoc"></td>
+          <td class="xmldoc"><p>Dnu pack command parameters</p>
+
+</td>
         </tr>
         <tr>
           <td class="type-name">
             <a href="fake-dnx-dnupublishparams.html">DnuPublishParams</a>
           </td>
-          <td class="xmldoc"></td>
+          <td class="xmldoc"><p>Dnu publish command parameters</p>
+
+</td>
         </tr>
         <tr>
           <td class="type-name">
             <a href="fake-dnx-dnurestoreparams.html">DnuRestoreParams</a>
           </td>
-          <td class="xmldoc"></td>
+          <td class="xmldoc"><p>dnu restore command options</p>
+
+</td>
         </tr>
         <tr>
           <td class="type-name">
             <a href="fake-dnx-dnvmoptions.html">DnvmOptions</a>
           </td>
-          <td class="xmldoc"></td>
+          <td class="xmldoc"><p>dnvm command common options</p>
+
+</td>
         </tr>
         <tr>
           <td class="type-name">
             <a href="fake-dnx-dnvmruntimeoptions.html">DnvmRuntimeOptions</a>
           </td>
-          <td class="xmldoc"></td>
-        </tr>
-        <tr>
-          <td class="type-name">
-            <a href="fake-dnx-publishconfiguration.html">PublishConfiguration</a>
-          </td>
-          <td class="xmldoc"></td>
+          <td class="xmldoc"><p>Common options for dnvm command over some specific sdk version</p>
+
+</td>
         </tr>
     </tbody>
   </table>
@@ -107,11 +121,16 @@
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/a35a6e57a87265649afc261da67ef666fe85a53f/src/Fake.Dotnet/Dnx.fs#L119-119" class="github-link">
+            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/acd3eeb713fd8f85a21dbc471feb81b1e3cd991b/src/Fake.Dotnet/Dnx.fs#L140-140" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>dnu command</p>
+<h2>Parameters</h2>
+<ul>
+<li>'setOptions' - set command options</li>
+<li>'command' - command to execute</li>
+</ul>
 
 
         </td>
@@ -127,11 +146,18 @@
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/a35a6e57a87265649afc261da67ef666fe85a53f/src/Fake.Dotnet/Dnx.fs#L232-232" class="github-link">
+            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/acd3eeb713fd8f85a21dbc471feb81b1e3cd991b/src/Fake.Dotnet/Dnx.fs#L271-271" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <p>dnu pack command</p>
+<h2>Parameters</h2>
+<ul>
+<li>'setParams' - set command options</li>
+<li>'project' - project to pack</li>
+</ul>
+
+
         </td>
       </tr>
       <tr>
@@ -145,11 +171,18 @@
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/a35a6e57a87265649afc261da67ef666fe85a53f/src/Fake.Dotnet/Dnx.fs#L195-195" class="github-link">
+            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/acd3eeb713fd8f85a21dbc471feb81b1e3cd991b/src/Fake.Dotnet/Dnx.fs#L229-229" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <p>dnu publish command</p>
+<h2>Parameters</h2>
+<ul>
+<li>'setParams' - set command options</li>
+<li>'project' - project to restore</li>
+</ul>
+
+
         </td>
       </tr>
       <tr>
@@ -163,11 +196,17 @@
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/a35a6e57a87265649afc261da67ef666fe85a53f/src/Fake.Dotnet/Dnx.fs#L142-142" class="github-link">
+            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/acd3eeb713fd8f85a21dbc471feb81b1e3cd991b/src/Fake.Dotnet/Dnx.fs#L169-169" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <h2>Parameters</h2>
+<ul>
+<li>'setParams' - set command options</li>
+<li>'project' - project to restore</li>
+</ul>
+
+
         </td>
       </tr>
       <tr>
@@ -181,11 +220,18 @@
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/a35a6e57a87265649afc261da67ef666fe85a53f/src/Fake.Dotnet/Dnx.fs#L63-63" class="github-link">
+            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/acd3eeb713fd8f85a21dbc471feb81b1e3cd991b/src/Fake.Dotnet/Dnx.fs#L71-71" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <p>Execute generic dnvm command</p>
+<h2>Parameters</h2>
+<ul>
+<li>'setOptions' - set command options</li>
+<li>'args' - command arguments</li>
+</ul>
+
+
         </td>
       </tr>
       <tr>
@@ -199,11 +245,16 @@
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/a35a6e57a87265649afc261da67ef666fe85a53f/src/Fake.Dotnet/Dnx.fs#L110-110" class="github-link">
+            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/acd3eeb713fd8f85a21dbc471feb81b1e3cd991b/src/Fake.Dotnet/Dnx.fs#L127-127" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>dnvm exec command</p>
+<h2>Parameters</h2>
+<ul>
+<li>'setOptions' - set command options</li>
+<li>'command' - command to execute</li>
+</ul>
 
 
         </td>
@@ -219,11 +270,13 @@
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/a35a6e57a87265649afc261da67ef666fe85a53f/src/Fake.Dotnet/Dnx.fs#L29-29" class="github-link">
+            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/acd3eeb713fd8f85a21dbc471feb81b1e3cd991b/src/Fake.Dotnet/Dnx.fs#L30-30" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <p>Install DNX if needed</p>
+
+
         </td>
       </tr>
       <tr>
@@ -237,11 +290,15 @@
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/a35a6e57a87265649afc261da67ef666fe85a53f/src/Fake.Dotnet/Dnx.fs#L90-90" class="github-link">
+            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/acd3eeb713fd8f85a21dbc471feb81b1e3cd991b/src/Fake.Dotnet/Dnx.fs#L101-101" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>dnvm upgrade command</p>
+<h2>Parameters</h2>
+<ul>
+<li>'setOptions' - set command options</li>
+</ul>
 
 
         </td>
@@ -257,11 +314,17 @@
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/a35a6e57a87265649afc261da67ef666fe85a53f/src/Fake.Dotnet/Dnx.fs#L240-240" class="github-link">
+            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/acd3eeb713fd8f85a21dbc471feb81b1e3cd991b/src/Fake.Dotnet/Dnx.fs#L282-282" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <p>get sdk version from global.json</p>
+<h2>Parameters</h2>
+<ul>
+<li>'project' - global.json path</li>
+</ul>
+
+
         </td>
       </tr>
       <tr>
@@ -275,11 +338,17 @@
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/a35a6e57a87265649afc261da67ef666fe85a53f/src/Fake.Dotnet/Dnx.fs#L246-246" class="github-link">
+            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/acd3eeb713fd8f85a21dbc471feb81b1e3cd991b/src/Fake.Dotnet/Dnx.fs#L291-291" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <p>set version suffix for 1.0.0-* format</p>
+<h2>Parameters</h2>
+<ul>
+<li>'version' - version suffix to set</li>
+</ul>
+
+
         </td>
       </tr>
     </tbody>
