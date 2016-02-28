@@ -51,7 +51,21 @@
     <tbody>
         <tr>
           <td class="type-name">
+            <a href="fake-dotnet-buildconfiguration.html">BuildConfiguration</a>
+          </td>
+          <td class="xmldoc"></td>
+        </tr>
+        <tr>
+          <td class="type-name">
             <a href="fake-dotnet-dotnetcliinstalloptions.html">DotNetCliInstallOptions</a>
+          </td>
+          <td class="xmldoc"><p>dotnet cli install options</p>
+
+</td>
+        </tr>
+        <tr>
+          <td class="type-name">
+            <a href="fake-dotnet-dotnetcompileoptions.html">DotNetCompileOptions</a>
           </td>
           <td class="xmldoc"></td>
         </tr>
@@ -63,27 +77,33 @@
         </tr>
         <tr>
           <td class="type-name">
-            <a href="fake-dotnet-dotnetcliversion.html">DotnetCliVersion</a>
+            <a href="fake-dotnet-dotnetpublishoptions.html">DotNetPublishOptions</a>
           </td>
           <td class="xmldoc"></td>
+        </tr>
+        <tr>
+          <td class="type-name">
+            <a href="fake-dotnet-dotnetcliversion.html">DotnetCliVersion</a>
+          </td>
+          <td class="xmldoc"><p>dotnet cli version (used to specify version when installing dotnet cli)</p>
+
+</td>
         </tr>
         <tr>
           <td class="type-name">
             <a href="fake-dotnet-dotnetoptions.html">DotnetOptions</a>
           </td>
-          <td class="xmldoc"></td>
+          <td class="xmldoc"><p>dotnet cli command execution options</p>
+
+</td>
         </tr>
         <tr>
           <td class="type-name">
             <a href="fake-dotnet-dotnetrestoreoptions.html">DotnetRestoreOptions</a>
           </td>
-          <td class="xmldoc"></td>
-        </tr>
-        <tr>
-          <td class="type-name">
-            <a href="fake-dotnet-packconfiguration.html">PackConfiguration</a>
-          </td>
-          <td class="xmldoc"></td>
+          <td class="xmldoc"><p>dotnet restore command options</p>
+
+</td>
         </tr>
     </tbody>
   </table>
@@ -107,11 +127,11 @@
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/master/src/Fake.Dotnet/Dotnet.fs#L12-12" class="github-link">
+            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/a35a6e57a87265649afc261da67ef666fe85a53f/src/Fake.Dotnet/Dotnet.fs#L12-12" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Dotnet cli default install directory (windows)</p>
+          <p>Dotnet cli default install directory (set to default localappdata dotnet dir). Update this to redirect all tool commands to different location.</p>
 
 
         </td>
@@ -127,11 +147,18 @@
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/master/src/Fake.Dotnet/Dotnet.fs#L103-103" class="github-link">
+            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/a35a6e57a87265649afc261da67ef666fe85a53f/src/Fake.Dotnet/Dotnet.fs#L119-119" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <p>Execute raw dotnet cli command</p>
+<h2>Parameters</h2>
+<ul>
+<li>'options' - common execution options</li>
+<li>'args' - command arguments</li>
+</ul>
+
+
         </td>
       </tr>
       <tr>
@@ -145,47 +172,117 @@
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/master/src/Fake.Dotnet/Dotnet.fs#L68-68" class="github-link">
+            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/a35a6e57a87265649afc261da67ef666fe85a53f/src/Fake.Dotnet/Dotnet.fs#L77-77" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <p>Install dotnet cli if required</p>
+<h2>Parameters</h2>
+<ul>
+<li>'setParams' - set installation options</li>
+</ul>
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '14', 14)" onmouseover="showTip(event, '14', 14)">
-            DotnetPack setParams project
+            DotnetCompile setParams project
           </code>
           <div class="tip" id="14">
-            <strong>Signature:</strong> setParams:(DotNetPackOptions -&gt; DotNetPackOptions) -&gt; project:string -&gt; unit<br />
+            <strong>Signature:</strong> setParams:(DotNetCompileOptions -&gt; DotNetCompileOptions) -&gt; project:string -&gt; unit<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/master/src/Fake.Dotnet/Dotnet.fs#L209-209" class="github-link">
+            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/a35a6e57a87265649afc261da67ef666fe85a53f/src/Fake.Dotnet/Dotnet.fs#L352-352" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <p>Execute dotnet compile command</p>
+<h2>Parameters</h2>
+<ul>
+<li>'setParams' - set compile command parameters</li>
+<li>'project' - project to compile</li>
+</ul>
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '15', 15)" onmouseover="showTip(event, '15', 15)">
-            DotnetRestore setParams project
+            DotnetPack setParams project
           </code>
           <div class="tip" id="15">
+            <strong>Signature:</strong> setParams:(DotNetPackOptions -&gt; DotNetPackOptions) -&gt; project:string -&gt; unit<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/a35a6e57a87265649afc261da67ef666fe85a53f/src/Fake.Dotnet/Dotnet.fs#L243-243" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Execute dotnet pack command</p>
+<h2>Parameters</h2>
+<ul>
+<li>'setParams' - set pack command parameters</li>
+<li>'project' - project to pack</li>
+</ul>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '16', 16)" onmouseover="showTip(event, '16', 16)">
+            DotnetPublish setParams project
+          </code>
+          <div class="tip" id="16">
+            <strong>Signature:</strong> setParams:(DotNetPublishOptions -&gt; DotNetPublishOptions) -&gt; project:string -&gt; unit<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/a35a6e57a87265649afc261da67ef666fe85a53f/src/Fake.Dotnet/Dotnet.fs#L295-295" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Execute dotnet publish command</p>
+<h2>Parameters</h2>
+<ul>
+<li>'setParams' - set publish command parameters</li>
+<li>'project' - project to publish</li>
+</ul>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '17', 17)" onmouseover="showTip(event, '17', 17)">
+            DotnetRestore setParams project
+          </code>
+          <div class="tip" id="17">
             <strong>Signature:</strong> setParams:(DotnetRestoreOptions -&gt; DotnetRestoreOptions) -&gt; project:string -&gt; unit<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/master/src/Fake.Dotnet/Dotnet.fs#L155-155" class="github-link">
+            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/a35a6e57a87265649afc261da67ef666fe85a53f/src/Fake.Dotnet/Dotnet.fs#L178-178" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <p>Execute dotnet restore command</p>
+<h2>Parameters</h2>
+<ul>
+<li>'setParams' - set restore command parameters</li>
+<li>'project' - project to restore packages</li>
+</ul>
+
+
         </td>
       </tr>
     </tbody>
