@@ -8,11 +8,14 @@ open System.IO
 /// Dotnet cli installer script
 let private dotnetCliInstaller = "https://raw.githubusercontent.com/dotnet/cli/rel/1.0.0/scripts/obtain/install.ps1"
 
-/// Dotnet cli default install directory (windows)
+/// Dotnet cli default install directory (set to default localappdata dotnet dir). Update this to redirect all tool commands to different location. 
 let mutable DefaultDotnetCliDir = environVar "LocalAppData" @@ "Microsoft" @@ "dotnet"
 
-// Dotnet cli executable path
-let private dotnetCliPath installDir = installDir @@ "cli" @@ "bin" @@ "dotnet.exe"
+/// Get dotnet cli executable path
+/// ## Parameters
+///
+/// - 'dotnetCliDir' - dotnet cli install directory 
+let private dotnetCliPath dotnetCliDir = dotnetCliDir @@ "cli" @@ "bin" @@ "dotnet.exe"
 
 // Temporary path of installer script
 let private tempInstallerScript = Path.GetTempPath() @@ "dotnet_install.ps1"
@@ -24,10 +27,12 @@ let private downloadInstaller fileName =
     trace (sprintf "downloaded dotnet installer to %s" fileName)
     fileName
 
+/// dotnet cli version (used to specify version when installing dotnet cli)
 type DotnetCliVersion =
     | Latest
     | Version of string
     
+/// dotnet cli install options
 type DotNetCliInstallOptions =
     {   
         /// Always download install script (otherwise install script is cached in temporary folder)
@@ -65,6 +70,10 @@ let private buildDotnetCliInstallArgs (param: DotNetCliInstallOptions) =
     ] |> Seq.filter (not << String.IsNullOrEmpty) |> String.concat " "
 
 
+/// Install dotnet cli if required
+/// ## Parameters
+///
+/// - 'setParams' - set installation options
 let DotnetCliInstall setParams =
     let param = DotNetCliInstallOptions.Default |> setParams  
 
@@ -85,8 +94,9 @@ let DotnetCliInstall setParams =
             info.Arguments <- args
         ) TimeSpan.MaxValue
 
-    if exitCode <> 0 then failwithf "dotnet install failed with code %i" exitCode
+    if exitCode <> 0 then failwithf "dotnet cli install failed with code %i" exitCode
 
+/// dotnet cli command execution options
 type DotnetOptions =
     {
         /// Dotnet cli install directory
@@ -100,6 +110,12 @@ type DotnetOptions =
         WorkingDirectory = currentDirectory
     }
 
+
+/// Execute raw dotnet cli command
+/// ## Parameters
+///
+/// - 'options' - common execution options
+/// - 'args' - command arguments
 let Dotnet (options: DotnetOptions) args = 
     let errors = new System.Collections.Generic.List<string>()
     let messages = new System.Collections.Generic.List<string>()
@@ -129,6 +145,7 @@ let private argList2 name values =
     |> Seq.collect (fun v -> ["--" + name; sprintf @"""%s""" v])
     |> String.concat " "
 
+/// dotnet restore command options
 type DotnetRestoreOptions =
     {   
         /// Common tool options
@@ -152,6 +169,12 @@ let private buildRestoreArgs (param: DotnetRestoreOptions) =
         param.ConfigFile |> Option.toList |> argList2 "configFile"
     ] |> Seq.filter (not << String.IsNullOrEmpty) |> String.concat " "
 
+
+/// Execute dotnet restore command
+/// ## Parameters
+///
+/// - 'setParams' - set restore command parameters
+/// - 'project' - project to restore packages
 let DotnetRestore setParams project =    
     traceStartTask "Dotnet:restore" project
     let param = DotnetRestoreOptions.Default |> setParams    
@@ -160,18 +183,27 @@ let DotnetRestore setParams project =
     if not result.OK then failwithf "dotnet restore failed with code %i" result.ExitCode
     traceEndTask "Dotnet:restore" project
 
-
-type PackConfiguration =
+// build configuration
+type BuildConfiguration =
     | Debug
     | Release
     | Custom of string
 
+/// [omit]
+let private buildConfigurationArg (param: BuildConfiguration) =
+    sprintf "--configuration %s" 
+        (match param with
+        | Debug -> "Debug"
+        | Release -> "Release"
+        | Custom config -> config)
+
+// dotnet pack command options
 type DotNetPackOptions =
     {   
         /// Common tool options
         Common: DotnetOptions;
         /// Pack configuration (--configuration)
-        Configuration: PackConfiguration;
+        Configuration: BuildConfiguration;
         /// Version suffix to use
         VersionSuffix: string option;
         /// Build base path (--build-base-path)
@@ -195,17 +227,19 @@ type DotNetPackOptions =
 /// [omit]
 let private buildPackArgs (param: DotNetPackOptions) =
     [  
-        sprintf "--configuration %s" 
-            (match param.Configuration with
-            | Debug -> "Debug"
-            | Release -> "Release"
-            | Custom config -> config)
+        buildConfigurationArg param.Configuration
         param.VersionSuffix |> Option.toList |> argList2 "version-suffix"
         param.BuildBasePath |> Option.toList |> argList2 "build-base-path"
         param.OutputPath |> Option.toList |> argList2 "output"
         (if param.NoBuild then "--no-build" else "")
     ] |> Seq.filter (not << String.IsNullOrEmpty) |> String.concat " "
 
+
+/// Execute dotnet pack command
+/// ## Parameters
+///
+/// - 'setParams' - set pack command parameters
+/// - 'project' - project to pack
 let DotnetPack setParams project =    
     traceStartTask "Dotnet:pack" project
     let param = DotNetPackOptions.Default |> setParams    
@@ -213,3 +247,112 @@ let DotnetPack setParams project =
     let result = Dotnet param.Common args    
     if not result.OK then failwithf "dotnet pack failed with code %i" result.ExitCode
     traceEndTask "Dotnet:pack" project
+
+
+// dotnet publish command options
+type DotNetPublishOptions =
+    {   
+        /// Common tool options
+        Common: DotnetOptions;
+        /// Pack configuration (--configuration)
+        Configuration: BuildConfiguration;
+        /// Target framework to compile for (--framework)
+        Framework: string option;
+        /// Target runtime to publish for (--runtime)
+        Runtime: string option;
+        /// Build base path (--build-base-path)
+        BuildBasePath: string option;
+        /// Output path (--output)
+        OutputPath: string option;
+    }
+
+    /// Parameter default values.
+    static member Default = {
+        Common = DotnetOptions.Default
+        Configuration = Release
+        Framework = None
+        Runtime = None
+        BuildBasePath = None
+        OutputPath = None
+    }
+
+/// [omit]
+let private buildPublishArgs (param: DotNetPublishOptions) =
+    [  
+        buildConfigurationArg param.Configuration
+        param.Framework |> Option.toList |> argList2 "framework"
+        param.Runtime |> Option.toList |> argList2 "runtime"
+        param.BuildBasePath |> Option.toList |> argList2 "build-base-path"
+        param.OutputPath |> Option.toList |> argList2 "output"
+    ] |> Seq.filter (not << String.IsNullOrEmpty) |> String.concat " "
+
+
+/// Execute dotnet publish command
+/// ## Parameters
+///
+/// - 'setParams' - set publish command parameters
+/// - 'project' - project to publish
+let DotnetPublish setParams project =    
+    traceStartTask "Dotnet:publish" project
+    let param = DotNetPublishOptions.Default |> setParams    
+    let args = sprintf "publish %s %s" project (buildPublishArgs param)
+    let result = Dotnet param.Common args    
+    if not result.OK then failwithf "dotnet publish failed with code %i" result.ExitCode
+    traceEndTask "Dotnet:publish" project
+
+
+// dotnet compile command options
+type DotNetCompileOptions =
+    {   
+        /// Common tool options
+        Common: DotnetOptions;
+        /// Pack configuration (--configuration)
+        Configuration: BuildConfiguration;
+        /// Target framework to compile for (--framework)
+        Framework: string option;
+        /// Target runtime to publish for (--runtime)
+        Runtime: string option;
+        /// Build base path (--build-base-path)
+        BuildBasePath: string option;
+        /// Output path (--output)
+        OutputPath: string option;
+        /// Native flag (--native)
+        Native: bool;
+    }
+
+    /// Parameter default values.
+    static member Default = {
+        Common = DotnetOptions.Default
+        Configuration = Release
+        Framework = None
+        Runtime = None
+        BuildBasePath = None
+        OutputPath = None
+        Native = false
+    }
+
+
+/// [omit]
+let private buildCompileArgs (param: DotNetCompileOptions) =
+    [  
+        buildConfigurationArg param.Configuration
+        param.Framework |> Option.toList |> argList2 "framework"
+        param.Runtime |> Option.toList |> argList2 "runtime"
+        param.BuildBasePath |> Option.toList |> argList2 "build-base-path"
+        param.OutputPath |> Option.toList |> argList2 "output"
+        (if param.Native then "--native" else "")
+    ] |> Seq.filter (not << String.IsNullOrEmpty) |> String.concat " "
+
+
+/// Execute dotnet compile command
+/// ## Parameters
+///
+/// - 'setParams' - set compile command parameters
+/// - 'project' - project to compile
+let DotnetCompile setParams project =    
+    traceStartTask "Dotnet:compile" project
+    let param = DotNetCompileOptions.Default |> setParams    
+    let args = sprintf "compile %s %s" project (buildCompileArgs param)
+    let result = Dotnet param.Common args    
+    if not result.OK then failwithf "dotnet compile failed with code %i" result.ExitCode
+    traceEndTask "Dotnet:compile" project

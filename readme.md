@@ -10,6 +10,8 @@ See the [API documentation](http://dolly22.github.io/FAKE.Dotnet/apidocs) for al
 * Dotnet - generic dotnet command helper
 * DotnetRestore - dotnet restore dependencies helper
 * DotnetPack - dotnet pack helper
+* DotnetPublish - dotnet publish helper
+* DotnetCompile - dotnet compile helper
 
 ### example
 ```fsharp
