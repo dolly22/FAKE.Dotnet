@@ -15,6 +15,7 @@ let buildDir = "./artifacts/build"
 
 let releaseNotes = LoadReleaseNotes "release_notes.md"
 let mutable version : SemVerHelper.SemVerInfo option = None
+let mutable currentGitSha : string = ""
 
 Target "Clean" (fun _ ->
     !! "artifacts" ++ "src/*/bin"
@@ -25,9 +26,9 @@ Target "UpdateVersion" (fun _ ->
     tracefn "Release notes version: %s" releaseNotes.NugetVersion
 
     // compute commit count
-    let repositoryDir = currentDirectory
-    let currentSha = getCurrentSHA1 repositoryDir
+    let repositoryDir = currentDirectory    
     let comitCount = runSimpleGitCommand repositoryDir "rev-list --count HEAD"
+    currentGitSha <- getCurrentSHA1 repositoryDir
 
     let prereleaseInfo = 
         match releaseNotes.SemVer.PreRelease with
@@ -89,7 +90,7 @@ Target "GenerateDocs" (fun _ ->
     let apiDocsDir = docsDir @@ "apidocs"
     CreateDir apiDocsDir
 
-    CreateDocsForDlls apiDocsDir templatesDir (projInfo @ ["--libDirs", buildDir]) (githubLink + "/blob/master") dllFiles
+    CreateDocsForDlls apiDocsDir templatesDir (projInfo @ ["--libDirs", buildDir]) (githubLink + "/blob/"+ currentGitSha) dllFiles
 
     CopyDir (docsDir @@ "content") "help/content" allFiles
 )
