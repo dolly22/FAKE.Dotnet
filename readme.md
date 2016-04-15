@@ -42,9 +42,11 @@ Run "BuildProjects"
 
 ## DNX usage
 
-* DnvmInstall - install dnvm if needed
+* DnvmToolInstall - install dnvm if needed
 * Dnvm - generic dnvm command helper
+* DnvmInstall - dnvm install command helper
 * DnvmUpgrade - dnvm upgrade command helper
+* DnvmUpdateSelf - dnvm update-self command helper
 * DnvmExec - dnvm exec command helper
 * Dnu - generic dnu command helper
 * DnuRestore - dnu restore dependencies helper

@@ -26,8 +26,8 @@ let private downloadInstaller fileName =
     trace (sprintf "downloaded dnvm installer to %s" fileName)
     fileName
 
-/// Install DNX if needed
-let DnvmInstall forceInstall =
+/// Install dnvm command if needed
+let DnvmToolInstall forceInstall =
     if not (fileExists dnvmPath) || forceInstall then     
         let installScript = 
             match forceInstall || not(File.Exists(tempInstallerScript)) with
@@ -71,7 +71,7 @@ type DnvmOptions =
 let Dnvm setOptions args = 
     let options = DnvmOptions.Default |> setOptions   
     if options.AutoInstall then
-        DnvmInstall false
+        DnvmToolInstall false
 
     let errors = new System.Collections.Generic.List<string>()
     let messages = new System.Collections.Generic.List<string>()
@@ -94,6 +94,52 @@ let Dnvm setOptions args =
 
     ProcessResult.New result messages errors
 
+/// Build configuration
+type RuntimeArchitecture =
+    | X86
+    | X64
+
+/// Common options for dnvm command over some specific sdk version
+type DnvmInstallParams =
+    {
+        /// Common tool options
+        Dnvm: DnvmOptions;
+        /// Version to install
+        VersionOrAlias: string;
+        /// Architecture
+        Architecture: RuntimeArchitecture Option;
+    }
+
+    /// Default command options
+    static member Default = {
+        Dnvm = DnvmOptions.Default
+        VersionOrAlias = "latest"
+        Architecture = None
+    }
+
+/// [omit]
+let private buildInstallArgs (param: DnvmInstallParams) =
+    [  
+        param.VersionOrAlias
+        (match param.Architecture with
+            | Some X86 -> "-a x86"
+            | Some X64 -> "-a x64"
+            | None -> "")
+    ] |> Seq.filter (not << String.IsNullOrEmpty) |> String.concat " "
+
+/// dnvm install command
+/// ## Parameters
+///
+/// - 'setOptions' - set command options
+let DnvmInstall setParams =    
+    traceStartTask "Dnvm" "install"
+    let options = DnvmInstallParams.Default |> setParams
+    let args = sprintf "install %s" (buildInstallArgs options)
+    let result = Dnvm (fun o -> options.Dnvm) args
+    if not result.OK then failwithf "dnvm install failed with code %i" result.ExitCode
+    traceEndTask "Dnvm" "install"
+
+
 /// dnvm upgrade command
 /// ## Parameters
 ///
@@ -103,6 +149,16 @@ let DnvmUpgrade setOptions =
     let result = Dnvm setOptions "upgrade"    
     if not result.OK then failwithf "dnvm upgrade failed with code %i" result.ExitCode
     traceEndTask "Dnvm" "upgrade"
+
+/// dnvm update-self command
+/// ## Parameters
+///
+/// - 'setOptions' - set command options
+let DnvmUpdateSelf setOptions =    
+    traceStartTask "Dnvm" "update-self"
+    let result = Dnvm setOptions "update-self"    
+    if not result.OK then failwithf "dnvm update-self failed with code %i" result.ExitCode
+    traceEndTask "Dnvm" "update-self"
 
 /// Common options for dnvm command over some specific sdk version
 type DnvmRuntimeOptions =
@@ -180,11 +236,18 @@ type BuildConfiguration =
     | Custom of string
 
 
+/// Publish runtime configuration
+type PublishRuntimeConfiguration =
+    | Active
+    | Custom of string
+
 /// Dnu publish command parameters
 type DnuPublishParams =
     {
         /// Dnvm runtime options
         Runtime: DnvmRuntimeOptions;
+        /// Publish runtime (--runtime)
+        PublishRuntime: PublishRuntimeConfiguration;
         /// Configuration (--configuration)
         Configuration: BuildConfiguration;
         /// Output path (--output)
@@ -200,6 +263,7 @@ type DnuPublishParams =
     /// Default parameter values
     static member Default = {
         Runtime = DnvmRuntimeOptions.Default
+        PublishRuntime = Active
         Configuration = Release
         OutputPath = None
         NoSource = false
@@ -214,7 +278,11 @@ let private buildPublishArgs (param: DnuPublishParams) =
             (match param.Configuration with
             | Debug -> "Debug"
             | Release -> "Release"
-            | Custom config -> config)
+            | BuildConfiguration.Custom config -> config)
+        sprintf "--runtime %s" 
+            (match param.PublishRuntime with
+            | Active -> "active"
+            | Custom runtimeId -> runtimeId)
         param.OutputPath |> Option.toList |> argList2 "out"
         (if param.NoSource then "--no-source" else "")
         (if param.Quiet then "--quiet" else "")
@@ -258,7 +326,7 @@ let private buildPackArgs (param: DnuPackParams) =
             (match param.Configuration with
             | Debug -> "Debug"
             | Release -> "Release"
-            | Custom config -> config)
+            | BuildConfiguration.Custom config -> config)
         param.OutputPath |> Option.toList |> argList2 "out"
     ] |> Seq.filter (not << String.IsNullOrEmpty) |> String.concat " "
 
