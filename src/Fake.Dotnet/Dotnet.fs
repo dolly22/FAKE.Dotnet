@@ -30,20 +30,27 @@ let private downloadInstaller fileName =
 
 /// dotnet cli architecture
 type DotnetCliArchitecture =
+    /// this value represents currently running OS architecture 
     | Auto
     | X86
     | X64
 
 /// dotnet cli version (used to specify version when installing dotnet cli)
 type DotnetCliVersion =
+    /// most latest build on specific channel 
     | Latest
+    ///  last known good version on specific channel (Note: LKG work is in progress. Once the work is finished, this will become new default)
     | Lkg
+    /// 4-part version in a format A.B.C.D - represents specific version of build
     | Version of string
 
 /// dotnet cli channel
 type DotnetCliChannel =
+    /// Possibly unstable, frequently changing, may contain new finished and unfinished features
     | Future
+    /// Pre-release stable with known issues and feature gaps 
     | Preview
+    /// Most stable releases
     | Production
     
 /// dotnet cli install options
@@ -51,15 +58,15 @@ type DotNetCliInstallOptions =
     {   
         /// Always download install script (otherwise install script is cached in temporary folder)
         AlwaysDownload: bool;
-        /// DotnetCli version
-        Version: DotnetCliVersion;
         /// Distribution channel
         Channel: DotnetCliChannel;
-        /// Architecture
-        Architecture: DotnetCliArchitecture;
+        /// DotnetCli version
+        Version: DotnetCliVersion;
         /// Custom installation directory (for local build installation)
         CustomInstallDir: string option
-        /// Include symbols in the installation
+        /// Architecture
+        Architecture: DotnetCliArchitecture;
+        /// Include symbols in the installation (Switch does not work yet. Symbols zip is not being uploaded yet) 
         DebugSymbols: bool;
         /// If set it will not perform installation but instead display what command line to use
         DryRun: bool
@@ -70,10 +77,10 @@ type DotNetCliInstallOptions =
     /// Parameter default values.
     static member Default = {
         AlwaysDownload = false
-        Version = Latest
         Channel = Preview
-        Architecture = Auto
+        Version = Latest        
         CustomInstallDir = None
+        Architecture = Auto        
         DebugSymbols = false
         DryRun = false
         NoPath = true
@@ -111,8 +118,8 @@ let private buildDotnetCliInstallArgs (param: DotNetCliInstallOptions) =
         | X86 -> Some "x86"
         | X64 -> Some "x64"
     [   
-        sprintf "-version '%s'" versionParamValue
         sprintf "-channel '%s'" channelParamValue
+        sprintf "-version '%s'" versionParamValue        
         optionToParam architectureParamValue "-architecture %s"
         boolToFlag param.DebugSymbols "-DebugSymbols"
         boolToFlag param.DryRun "-DryRun"
@@ -206,6 +213,11 @@ let private argList2 name values =
     |> Seq.collect (fun v -> ["--" + name; sprintf @"""%s""" v])
     |> String.concat " "
 
+/// [omit]
+let private argOption name value =
+    match value with
+        | true -> sprintf "--%s" name
+        | false -> ""
 
 /// dotnet restore verbosity
 type NugetRestoreVerbosity =
@@ -251,18 +263,13 @@ type DotnetRestoreOptions =
 
 /// [omit]
 let private buildRestoreArgs (param: DotnetRestoreOptions) =
-    let restoreVerbosityParamValue = 
-        match param.Verbosity with
-        | Some v -> sprintf "--verbosity %s" <| v.ToString()
-        | None -> ""
-
     [   param.Sources |> argList2 "source"
         param.Packages |> argList2 "packages"
         param.ConfigFile |> Option.toList |> argList2 "configFile"
-        (if param.NoCache then "--no-cache" else "")
-        (if param.IgnoreFailedSources then "--ignore-failed-sources" else "")
-        (if param.DisableParallel then "--disable-parallel" else "")
-        restoreVerbosityParamValue
+        param.NoCache |> argOption "no-cache" 
+        param.IgnoreFailedSources |> argOption "ignore-failed-sources" 
+        param.DisableParallel |> argOption "disable-parallel" 
+        param.Verbosity |> Option.toList |> Seq.map (fun v -> v.ToString()) |> argList2 "verbosity"
     ] |> Seq.filter (not << String.IsNullOrEmpty) |> String.concat " "
 
 
@@ -327,7 +334,7 @@ let private buildPackArgs (param: DotNetPackOptions) =
         param.VersionSuffix |> Option.toList |> argList2 "version-suffix"
         param.BuildBasePath |> Option.toList |> argList2 "build-base-path"
         param.OutputPath |> Option.toList |> argList2 "output"
-        (if param.NoBuild then "--no-build" else "")
+        param.NoBuild |> argOption "no-build" 
     ] |> Seq.filter (not << String.IsNullOrEmpty) |> String.concat " "
 
 
@@ -387,7 +394,7 @@ let private buildPublishArgs (param: DotNetPublishOptions) =
         param.BuildBasePath |> Option.toList |> argList2 "build-base-path"
         param.OutputPath |> Option.toList |> argList2 "output"
         param.VersionSuffix |> Option.toList |> argList2 "version-suffix"
-        (if param.NoBuild then "--no-build" else "")
+        param.NoBuild |> argOption "no-build" 
     ] |> Seq.filter (not << String.IsNullOrEmpty) |> String.concat " "
 
 
