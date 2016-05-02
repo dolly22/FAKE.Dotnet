@@ -7,7 +7,7 @@ open System
 open System.IO
 
 /// Dotnet cli installer script
-let private dotnetCliInstaller = "https://raw.githubusercontent.com/dotnet/cli/rel/1.0.0/scripts/obtain/install.ps1"
+let private dotnetCliInstaller = "https://raw.githubusercontent.com/dotnet/cli/rel/1.0.0/scripts/obtain/dotnet-install.ps1"
 
 /// Dotnet cli default install directory (set to default localappdata dotnet dir). Update this to redirect all tool commands to different location. 
 let mutable DefaultDotnetCliDir = environVar "LocalAppData" @@ "Microsoft" @@ "dotnet"
@@ -23,15 +23,28 @@ let private tempInstallerScript = Path.GetTempPath() @@ "dotnet_install.ps1"
 
 let private downloadInstaller fileName =  
     let installScript = Http.RequestStream dotnetCliInstaller
-    use outFile = File.OpenWrite(fileName)
+    use outFile = File.Open(fileName, FileMode.Create)
     installScript.ResponseStream.CopyTo(outFile)
     trace (sprintf "downloaded dotnet installer to %s" fileName)
     fileName
 
+/// dotnet cli architecture
+type DotnetCliArchitecture =
+    | Auto
+    | X86
+    | X64
+
 /// dotnet cli version (used to specify version when installing dotnet cli)
 type DotnetCliVersion =
     | Latest
+    | Lkg
     | Version of string
+
+/// dotnet cli channel
+type DotnetCliChannel =
+    | Future
+    | Preview
+    | Production
     
 /// dotnet cli install options
 type DotNetCliInstallOptions =
@@ -41,33 +54,69 @@ type DotNetCliInstallOptions =
         /// DotnetCli version
         Version: DotnetCliVersion;
         /// Distribution channel
-        Channel: string option;
+        Channel: DotnetCliChannel;
+        /// Architecture
+        Architecture: DotnetCliArchitecture;
         /// Custom installation directory (for local build installation)
-        InstallDirectory: string option
+        CustomInstallDir: string option
+        /// Include symbols in the installation
+        DebugSymbols: bool;
+        /// If set it will not perform installation but instead display what command line to use
+        DryRun: bool
+        /// Do not update path variable
+        NoPath: bool
     }
 
     /// Parameter default values.
     static member Default = {
         AlwaysDownload = false
         Version = Latest
-        Channel = None
-        InstallDirectory = None
+        Channel = Preview
+        Architecture = Auto
+        CustomInstallDir = None
+        DebugSymbols = false
+        DryRun = false
+        NoPath = true
     }
 
+/// [omit]
 let private optionToParam option paramFormat =
     match option with
     | Some value -> sprintf paramFormat value
     | None -> ""
 
 /// [omit]
+let private boolToFlag value flagParam = 
+    match value with
+    | true -> flagParam
+    | false -> ""
+
+/// [omit]
 let private buildDotnetCliInstallArgs (param: DotNetCliInstallOptions) =
-    let versionParam = 
+    let versionParamValue = 
         match param.Version with
-        | Latest -> ""
-        | Version ver -> sprintf "-version '%s'" ver
+        | Latest -> "latest"
+        | Lkg -> "lkg"
+        | Version ver -> ver
+
+    let channelParamValue = 
+        match param.Channel with
+        | Future -> "future"
+        | Preview -> "preview"
+        | Production -> "production"
+
+    let architectureParamValue = 
+        match param.Architecture with
+        | Auto -> None
+        | X86 -> Some "x86"
+        | X64 -> Some "x64"
     [   
-        versionParam
-        optionToParam param.Channel "-channel '%s'"
+        sprintf "-version '%s'" versionParamValue
+        sprintf "-channel '%s'" channelParamValue
+        optionToParam architectureParamValue "-architecture %s"
+        boolToFlag param.DebugSymbols "-DebugSymbols"
+        boolToFlag param.DryRun "-DryRun"
+        boolToFlag param.NoPath "-NoPath"
     ] |> Seq.filter (not << String.IsNullOrEmpty) |> String.concat " "
 
 
@@ -84,10 +133,10 @@ let DotnetCliInstall setParams =
             | false -> tempInstallerScript
 
     // set custom install directory
-    if param.InstallDirectory.IsSome then
-        setEnvironVar "DOTNET_INSTALL_DIR" param.InstallDirectory.Value
+    if param.CustomInstallDir.IsSome then
+        setEnvironVar "DOTNET_INSTALL_DIR" param.CustomInstallDir.Value
 
-    let args = sprintf "-NoProfile -NoLogo -Command \"%s %s; exit $LastExitCode;\"" installScript (buildDotnetCliInstallArgs param)
+    let args = sprintf "-NoProfile -NoLogo -Command \"%s %s; if (-not $?) { exit -1 };\"" installScript (buildDotnetCliInstallArgs param)
     let exitCode = 
         ExecProcess (fun info ->
             info.FileName <- "powershell"
@@ -95,7 +144,11 @@ let DotnetCliInstall setParams =
             info.Arguments <- args
         ) TimeSpan.MaxValue
 
-    if exitCode <> 0 then failwithf "dotnet cli install failed with code %i" exitCode
+    if exitCode <> 0 then
+        // force download new installer script
+        traceError "dotnet cli install failed, trying to redownload installer..."
+        let installScript = downloadInstaller tempInstallerScript
+        failwithf "dotnet cli install failed with code %i" exitCode
 
 /// dotnet cli command execution options
 type DotnetOptions =
@@ -104,11 +157,14 @@ type DotnetOptions =
         DotnetDirectory: string;
         /// Command working directory
         WorkingDirectory: string;
+        /// Custom parameters
+        CustomParams: string option
     }
 
     static member Default = {
         DotnetDirectory = DefaultDotnetCliDir
         WorkingDirectory = currentDirectory
+        CustomParams = None
     }
 
 
@@ -130,11 +186,15 @@ let Dotnet (options: DotnetOptions) args =
         traceImportant msg
         messages.Add msg
 
+    let cmdArgs = match options.CustomParams with
+                    | Some v -> sprintf "%s %s" args v
+                    | None -> args
+
     let result = 
         ExecProcessWithLambdas (fun info ->
             info.FileName <- dotnetCliPath options.DotnetDirectory
             info.WorkingDirectory <- options.WorkingDirectory
-            info.Arguments <- args
+            info.Arguments <- cmdArgs
         ) timeout true errorF messageF
 
     ProcessResult.New result messages errors
@@ -146,6 +206,16 @@ let private argList2 name values =
     |> Seq.collect (fun v -> ["--" + name; sprintf @"""%s""" v])
     |> String.concat " "
 
+
+/// dotnet restore verbosity
+type NugetRestoreVerbosity =
+    | Debug
+    | Verbose
+    | Information
+    | Minimal
+    | Warning
+    | Error
+
 /// dotnet restore command options
 type DotnetRestoreOptions =
     {   
@@ -153,21 +223,46 @@ type DotnetRestoreOptions =
         Common: DotnetOptions;
         /// Nuget feeds to search updates in. Use default if empty.
         Sources: string list;
-        /// Path to the nuget.exe.
+        /// Directory to install packages in (--packages).
+        Packages: string list;
+        /// Path to the nuget configuration file (nuget.config).
         ConfigFile: string option;
+        /// No cache flag (--no-cache)
+        NoCache: bool;
+        /// Restore logging verbosity (--verbosity)
+        Verbosity: NugetRestoreVerbosity option
+        /// Only warning failed sources if there are packages meeting version requirement (--ignore-failed-sources)
+        IgnoreFailedSources: bool;
+        /// Disables restoring multiple projects in parallel (--disable-parallel)
+        DisableParallel: bool;
     }
 
     /// Parameter default values.
     static member Default = {
         Common = DotnetOptions.Default
         Sources = []
-        ConfigFile = None
+        Packages = []
+        ConfigFile = None        
+        NoCache = false
+        Verbosity = None
+        IgnoreFailedSources = false
+        DisableParallel = false
     }
 
 /// [omit]
 let private buildRestoreArgs (param: DotnetRestoreOptions) =
+    let restoreVerbosityParamValue = 
+        match param.Verbosity with
+        | Some v -> sprintf "--verbosity %s" <| v.ToString()
+        | None -> ""
+
     [   param.Sources |> argList2 "source"
+        param.Packages |> argList2 "packages"
         param.ConfigFile |> Option.toList |> argList2 "configFile"
+        (if param.NoCache then "--no-cache" else "")
+        (if param.IgnoreFailedSources then "--ignore-failed-sources" else "")
+        (if param.DisableParallel then "--disable-parallel" else "")
+        restoreVerbosityParamValue
     ] |> Seq.filter (not << String.IsNullOrEmpty) |> String.concat " "
 
 
@@ -265,6 +360,10 @@ type DotNetPublishOptions =
         BuildBasePath: string option;
         /// Output path (--output)
         OutputPath: string option;
+        /// Defines what `*` should be replaced with in version field in project.json (--version-suffix)
+        VersionSuffix: string option;
+        /// No build flag (--no-build)
+        NoBuild: bool;
     }
 
     /// Parameter default values.
@@ -275,6 +374,8 @@ type DotNetPublishOptions =
         Runtime = None
         BuildBasePath = None
         OutputPath = None
+        VersionSuffix = None
+        NoBuild = false
     }
 
 /// [omit]
@@ -285,6 +386,8 @@ let private buildPublishArgs (param: DotNetPublishOptions) =
         param.Runtime |> Option.toList |> argList2 "runtime"
         param.BuildBasePath |> Option.toList |> argList2 "build-base-path"
         param.OutputPath |> Option.toList |> argList2 "output"
+        param.VersionSuffix |> Option.toList |> argList2 "version-suffix"
+        (if param.NoBuild then "--no-build" else "")
     ] |> Seq.filter (not << String.IsNullOrEmpty) |> String.concat " "
 
 
@@ -302,8 +405,8 @@ let DotnetPublish setParams project =
     traceEndTask "Dotnet:publish" project
 
 
-/// dotnet compile command options
-type DotNetCompileOptions =
+/// dotnet build command options
+type DotNetBuildOptions =
     {   
         /// Common tool options
         Common: DotnetOptions;
@@ -334,7 +437,7 @@ type DotNetCompileOptions =
 
 
 /// [omit]
-let private buildCompileArgs (param: DotNetCompileOptions) =
+let private buildBuildArgs (param: DotNetBuildOptions) =
     [  
         buildConfigurationArg param.Configuration
         param.Framework |> Option.toList |> argList2 "framework"
@@ -345,15 +448,15 @@ let private buildCompileArgs (param: DotNetCompileOptions) =
     ] |> Seq.filter (not << String.IsNullOrEmpty) |> String.concat " "
 
 
-/// Execute dotnet compile command
+/// Execute dotnet build command
 /// ## Parameters
 ///
 /// - 'setParams' - set compile command parameters
 /// - 'project' - project to compile
 let DotnetCompile setParams project =    
-    traceStartTask "Dotnet:compile" project
-    let param = DotNetCompileOptions.Default |> setParams    
-    let args = sprintf "compile %s %s" project (buildCompileArgs param)
+    traceStartTask "Dotnet:build" project
+    let param = DotNetBuildOptions.Default |> setParams    
+    let args = sprintf "build %s %s" project (buildBuildArgs param)
     let result = Dotnet param.Common args    
-    if not result.OK then failwithf "dotnet compile failed with code %i" result.ExitCode
-    traceEndTask "Dotnet:compile" project
+    if not result.OK then failwithf "dotnet build failed with code %i" result.ExitCode
+    traceEndTask "Dotnet:build" project
