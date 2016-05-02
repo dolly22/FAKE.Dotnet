@@ -61,17 +61,17 @@
         </tr>
         <tr>
           <td class="type-name">
-            <a href="fake-dotnet-dotnetcliinstalloptions.html">DotNetCliInstallOptions</a>
+            <a href="fake-dotnet-dotnetbuildoptions.html">DotNetBuildOptions</a>
           </td>
-          <td class="xmldoc"><p>dotnet cli install options</p>
+          <td class="xmldoc"><p>dotnet build command options</p>
 
 </td>
         </tr>
         <tr>
           <td class="type-name">
-            <a href="fake-dotnet-dotnetcompileoptions.html">DotNetCompileOptions</a>
+            <a href="fake-dotnet-dotnetcliinstalloptions.html">DotNetCliInstallOptions</a>
           </td>
-          <td class="xmldoc"><p>dotnet compile command options</p>
+          <td class="xmldoc"><p>dotnet cli install options</p>
 
 </td>
         </tr>
@@ -88,6 +88,22 @@
             <a href="fake-dotnet-dotnetpublishoptions.html">DotNetPublishOptions</a>
           </td>
           <td class="xmldoc"><p>dotnet publish command options</p>
+
+</td>
+        </tr>
+        <tr>
+          <td class="type-name">
+            <a href="fake-dotnet-dotnetcliarchitecture.html">DotnetCliArchitecture</a>
+          </td>
+          <td class="xmldoc"><p>dotnet cli architecture</p>
+
+</td>
+        </tr>
+        <tr>
+          <td class="type-name">
+            <a href="fake-dotnet-dotnetclichannel.html">DotnetCliChannel</a>
+          </td>
+          <td class="xmldoc"><p>dotnet cli channel</p>
 
 </td>
         </tr>
@@ -115,6 +131,14 @@
 
 </td>
         </tr>
+        <tr>
+          <td class="type-name">
+            <a href="fake-dotnet-nugetrestoreverbosity.html">NugetRestoreVerbosity</a>
+          </td>
+          <td class="xmldoc"><p>dotnet restore verbosity</p>
+
+</td>
+        </tr>
     </tbody>
   </table>
 
@@ -129,15 +153,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '11', 11)" onmouseover="showTip(event, '11', 11)">
+          <code onmouseout="hideTip(event, '13', 13)" onmouseover="showTip(event, '13', 13)">
             DefaultDotnetCliDir 
           </code>
-          <div class="tip" id="11">
+          <div class="tip" id="13">
             <strong>Signature:</strong> string<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/acd3eeb713fd8f85a21dbc471feb81b1e3cd991b/src/Fake.Dotnet/Dotnet.fs#L13-13" class="github-link">
+            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/88ccdb6d310e19762d2cc91f43e78c86bcda27dd/src/Fake.Dotnet/Dotnet.fs#L13-13" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -149,15 +173,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '12', 12)" onmouseover="showTip(event, '12', 12)">
+          <code onmouseout="hideTip(event, '14', 14)" onmouseover="showTip(event, '14', 14)">
             Dotnet options args
           </code>
-          <div class="tip" id="12">
+          <div class="tip" id="14">
             <strong>Signature:</strong> options:DotnetOptions -&gt; args:string -&gt; ProcessResult<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/acd3eeb713fd8f85a21dbc471feb81b1e3cd991b/src/Fake.Dotnet/Dotnet.fs#L120-120" class="github-link">
+            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/88ccdb6d310e19762d2cc91f43e78c86bcda27dd/src/Fake.Dotnet/Dotnet.fs#L176-176" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -174,15 +198,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '13', 13)" onmouseover="showTip(event, '13', 13)">
+          <code onmouseout="hideTip(event, '15', 15)" onmouseover="showTip(event, '15', 15)">
             DotnetCliInstall setParams
           </code>
-          <div class="tip" id="13">
+          <div class="tip" id="15">
             <strong>Signature:</strong> setParams:(DotNetCliInstallOptions -&gt; DotNetCliInstallOptions) -&gt; unit<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/acd3eeb713fd8f85a21dbc471feb81b1e3cd991b/src/Fake.Dotnet/Dotnet.fs#L78-78" class="github-link">
+            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/88ccdb6d310e19762d2cc91f43e78c86bcda27dd/src/Fake.Dotnet/Dotnet.fs#L127-127" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -198,19 +222,19 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '14', 14)" onmouseover="showTip(event, '14', 14)">
+          <code onmouseout="hideTip(event, '16', 16)" onmouseover="showTip(event, '16', 16)">
             DotnetCompile setParams project
           </code>
-          <div class="tip" id="14">
-            <strong>Signature:</strong> setParams:(DotNetCompileOptions -&gt; DotNetCompileOptions) -&gt; project:string -&gt; unit<br />
+          <div class="tip" id="16">
+            <strong>Signature:</strong> setParams:(DotNetBuildOptions -&gt; DotNetBuildOptions) -&gt; project:string -&gt; unit<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/acd3eeb713fd8f85a21dbc471feb81b1e3cd991b/src/Fake.Dotnet/Dotnet.fs#L353-353" class="github-link">
+            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/88ccdb6d310e19762d2cc91f43e78c86bcda27dd/src/Fake.Dotnet/Dotnet.fs#L456-456" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Execute dotnet compile command</p>
+          <p>Execute dotnet build command</p>
 <h2>Parameters</h2>
 <ul>
 <li>'setParams' - set compile command parameters</li>
@@ -223,15 +247,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '15', 15)" onmouseover="showTip(event, '15', 15)">
+          <code onmouseout="hideTip(event, '17', 17)" onmouseover="showTip(event, '17', 17)">
             DotnetPack setParams project
           </code>
-          <div class="tip" id="15">
+          <div class="tip" id="17">
             <strong>Signature:</strong> setParams:(DotNetPackOptions -&gt; DotNetPackOptions) -&gt; project:string -&gt; unit<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/acd3eeb713fd8f85a21dbc471feb81b1e3cd991b/src/Fake.Dotnet/Dotnet.fs#L244-244" class="github-link">
+            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/88ccdb6d310e19762d2cc91f43e78c86bcda27dd/src/Fake.Dotnet/Dotnet.fs#L339-339" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -248,15 +272,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '16', 16)" onmouseover="showTip(event, '16', 16)">
+          <code onmouseout="hideTip(event, '18', 18)" onmouseover="showTip(event, '18', 18)">
             DotnetPublish setParams project
           </code>
-          <div class="tip" id="16">
+          <div class="tip" id="18">
             <strong>Signature:</strong> setParams:(DotNetPublishOptions -&gt; DotNetPublishOptions) -&gt; project:string -&gt; unit<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/acd3eeb713fd8f85a21dbc471feb81b1e3cd991b/src/Fake.Dotnet/Dotnet.fs#L296-296" class="github-link">
+            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/88ccdb6d310e19762d2cc91f43e78c86bcda27dd/src/Fake.Dotnet/Dotnet.fs#L399-399" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -273,15 +297,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '17', 17)" onmouseover="showTip(event, '17', 17)">
+          <code onmouseout="hideTip(event, '19', 19)" onmouseover="showTip(event, '19', 19)">
             DotnetRestore setParams project
           </code>
-          <div class="tip" id="17">
+          <div class="tip" id="19">
             <strong>Signature:</strong> setParams:(DotnetRestoreOptions -&gt; DotnetRestoreOptions) -&gt; project:string -&gt; unit<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/acd3eeb713fd8f85a21dbc471feb81b1e3cd991b/src/Fake.Dotnet/Dotnet.fs#L179-179" class="github-link">
+            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/88ccdb6d310e19762d2cc91f43e78c86bcda27dd/src/Fake.Dotnet/Dotnet.fs#L274-274" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>

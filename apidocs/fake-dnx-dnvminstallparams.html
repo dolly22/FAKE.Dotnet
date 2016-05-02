@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>BuildConfiguration - FAKE.Dotnet</title>
+    <title>DnvmInstallParams - FAKE.Dotnet</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="Tomas Dolezal">
@@ -34,73 +34,108 @@
 
 
 
-<h1>BuildConfiguration</h1>
+<h1>DnvmInstallParams</h1>
 <p>
   <span>Namespace: Fake</span><br />
-  <span>Parent Module: <a href="fake-dotnet.html">Dotnet</a></span>
+  <span>Parent Module: <a href="fake-dnx.html">Dnx</a></span>
 </p>
 <div class="xmldoc">
-<p>build configuration</p>
+<p>Common options for dnvm command over some specific sdk version</p>
 
 </div>
-  <h3>Union Cases</h3>
+  <h3>Record Fields</h3>
   <table class="table table-bordered member-list">
     <thead>
-      <tr><td>Union Case</td><td>Description</td></tr>
+      <tr><td>Record Field</td><td>Description</td></tr>
     </thead>
     <tbody>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '52', 52)" onmouseover="showTip(event, '52', 52)">
-            Custom(string)
+          <code onmouseout="hideTip(event, '37', 37)" onmouseover="showTip(event, '37', 37)">
+            Architecture
           </code>
-          <div class="tip" id="52">
+          <div class="tip" id="37">
+            <strong>Signature:</strong> Option&lt;RuntimeArchitecture&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/88ccdb6d310e19762d2cc91f43e78c86bcda27dd/src/Fake.Dotnet/Dnx.fs#L110-110" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Architecture</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '38', 38)" onmouseover="showTip(event, '38', 38)">
+            Dnvm
+          </code>
+          <div class="tip" id="38">
+            <strong>Signature:</strong> DnvmOptions<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/88ccdb6d310e19762d2cc91f43e78c86bcda27dd/src/Fake.Dotnet/Dnx.fs#L106-106" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Common tool options</p>
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '39', 39)" onmouseover="showTip(event, '39', 39)">
+            VersionOrAlias
+          </code>
+          <div class="tip" id="39">
             <strong>Signature:</strong> string<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/88ccdb6d310e19762d2cc91f43e78c86bcda27dd/src/Fake.Dotnet/Dotnet.fs#L286-286" class="github-link">
+            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/88ccdb6d310e19762d2cc91f43e78c86bcda27dd/src/Fake.Dotnet/Dnx.fs#L108-108" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <p>Version to install</p>
+
+
         </td>
       </tr>
+    </tbody>
+  </table>
+  <h3>Static members</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Static member</td><td>Description</td></tr>
+    </thead>
+    <tbody>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '53', 53)" onmouseover="showTip(event, '53', 53)">
-            Debug
+          <code onmouseout="hideTip(event, '40', 40)" onmouseover="showTip(event, '40', 40)">
+            Default
           </code>
-          <div class="tip" id="53">
-            <strong>Signature:</strong> <br />
+          <div class="tip" id="40">
+            <strong>Signature:</strong> DnvmInstallParams<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/88ccdb6d310e19762d2cc91f43e78c86bcda27dd/src/Fake.Dotnet/Dotnet.fs#L284-284" class="github-link">
+            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/88ccdb6d310e19762d2cc91f43e78c86bcda27dd/src/Fake.Dotnet/Dnx.fs#L114-114" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
+          <p>Default command options</p>
 
-          <code onmouseout="hideTip(event, '54', 54)" onmouseover="showTip(event, '54', 54)">
-            Release
-          </code>
-          <div class="tip" id="54">
-            <strong>Signature:</strong> <br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/88ccdb6d310e19762d2cc91f43e78c86bcda27dd/src/Fake.Dotnet/Dotnet.fs#L285-285" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          
+
+              <p>CompiledName: <code>get_Default</code></p>
         </td>
       </tr>
     </tbody>
