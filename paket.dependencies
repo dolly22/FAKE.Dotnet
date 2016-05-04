@@ -6,4 +6,4 @@ nuget FAKE.Lib
 nuget FSharp.Data
 nuget FSharp.Formatting.CommandTool
 
-github dolly22/FAKE.GItsemver Gitsemver.fsx
+github dolly22/FAKE.Gitsemver Gitsemver.fsx

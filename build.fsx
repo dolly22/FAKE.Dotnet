@@ -1,19 +1,21 @@
 ﻿#I "packages/FAKE/tools/"
 #r "FakeLib.dll"
 
+#load "paket-files\dolly22\FAKE.Gitsemver\Gitsemver.fsx"
+
 open Fake
 open Fake.Git
 open Fake.FSharpFormatting
 open Fake.ReleaseNotesHelper
 open Fake.AssemblyInfoFile
 open Fake.SemVerHelper
+open Gitsemver
 
 let authors = ["Tomas Dolezal"]
 
 let docsDir = "./artifacts/docs"
 let buildDir = "./artifacts/build"
 
-let releaseNotes = LoadReleaseNotes "release_notes.md"
 let mutable version : SemVerHelper.SemVerInfo option = None
 let mutable currentGitSha : string = ""
 
@@ -23,32 +25,22 @@ Target "Clean" (fun _ ->
 )
 
 Target "UpdateVersion" (fun _ ->   
-    tracefn "Release notes version: %s" releaseNotes.NugetVersion
+    let semver = 
+        getSemverInfoDefault 
+        |> appendPreReleaseBuildNumber 3 
 
-    // compute commit count
-    let repositoryDir = currentDirectory    
-    let comitCount = runSimpleGitCommand repositoryDir "rev-list --count HEAD"
-    currentGitSha <- getCurrentSHA1 repositoryDir
+    version <- Some semver        
+    currentGitSha <- getCurrentSHA1 currentDirectory
 
-    let prereleaseInfo = 
-        match releaseNotes.SemVer.PreRelease with
-        | Some ver ->     
-            let buildCounterFixed = comitCount.PadLeft(3, '0')             
-            let versionWithBuild = sprintf "%s-%s" ver.Origin buildCounterFixed           
-            Some {
-                PreRelease.Origin = versionWithBuild
-                Name = versionWithBuild
-                Number = None
-            }
-        | _ -> None
+    let fileVersion = sprintf "%d.%d.%d" semver.Major semver.Minor semver.Patch
+    let assemblyVersion = sprintf "%d.0.0" semver.Major
 
     // update version info file
     CreateFSharpAssemblyInfo "src/SolutionInfo.fs"
-        [   Attribute.Version releaseNotes.AssemblyVersion
-            Attribute.FileVersion releaseNotes.AssemblyVersion
-            Attribute.InformationalVersion releaseNotes.NugetVersion ]
+        [   Attribute.Version assemblyVersion
+            Attribute.FileVersion fileVersion
+            Attribute.InformationalVersion (semver.ToString()) ]
 
-    version <- Some { releaseNotes.SemVer with PreRelease = prereleaseInfo }
     tracefn "Using version: %A" version.Value
 )
 

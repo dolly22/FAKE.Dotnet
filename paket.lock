@@ -3,13 +3,13 @@ NUGET
   specs:
     FAKE (4.25.5)
     FAKE.Lib (4.25.5)
-    FSharp.Data (2.3)
-      Zlib.Portable (>= 1.11) - framework: portable-net45+sl5+win8, portable-net45+win8, portable-net45+win8+wp8+wpa81
+    FSharp.Data (2.3.0)
+      Zlib.Portable (>= 1.11.0) - framework: portable-net45+sl5+win8, portable-net45+win8, portable-net45+win8+wp8+wpa81
     FSharp.Formatting.CommandTool (2.14.2)
     NuGet.CommandLine (3.4.3)
-    Zlib.Portable (1.11) - framework: portable-net45+sl5+win8, portable-net45+win8, portable-net45+win8+wp8+wpa81
+    Zlib.Portable (1.11.0) - framework: portable-net45+sl5+win8, portable-net45+win8, portable-net45+win8+wp8+wpa81
 GITHUB
-  remote: dolly22/FAKE.GItsemver
+  remote: dolly22/FAKE.Gitsemver
   specs:
-    Gitsemver.fsx (522b78127defee9fe16e4e8142295586e9aa71ee)
+    Gitsemver.fsx (9366f91de7368499238ae8fb9a5c5f3f73a632d5)
       FAKE.Lib
