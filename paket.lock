@@ -11,5 +11,5 @@ NUGET
 GITHUB
   remote: dolly22/FAKE.Gitsemver
   specs:
-    Gitsemver.fsx (9366f91de7368499238ae8fb9a5c5f3f73a632d5)
+    Gitsemver.fsx (475e2a1ce8ab6d8d4c2ec7858270c4e654bd9b1a)
       FAKE.Lib
