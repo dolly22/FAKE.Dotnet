@@ -3,6 +3,7 @@ module Fake.Dotnet
 
 open Fake
 open FSharp.Data
+open FSharp.Data.JsonExtensions
 open System
 open System.IO
 
@@ -16,7 +17,7 @@ let mutable DefaultDotnetCliDir = environVar "LocalAppData" @@ "Microsoft" @@ "d
 /// ## Parameters
 ///
 /// - 'dotnetCliDir' - dotnet cli install directory 
-let private dotnetCliPath dotnetCliDir = dotnetCliDir @@ "cli" @@ "bin" @@ "dotnet.exe"
+let private dotnetCliPath dotnetCliDir = dotnetCliDir @@ "dotnet.exe"
 
 // Temporary path of installer script
 let private tempInstallerScript = Path.GetTempPath() @@ "dotnet_install.ps1"
@@ -50,6 +51,8 @@ type DotnetCliChannel =
     | Future
     /// Pre-release stable with known issues and feature gaps 
     | Preview
+    /// Beta distribution channel
+    | Beta
     /// Most stable releases
     | Production
     
@@ -77,7 +80,7 @@ type DotNetCliInstallOptions =
     /// Parameter default values.
     static member Default = {
         AlwaysDownload = false
-        Channel = Preview
+        Channel = Beta
         Version = Latest        
         CustomInstallDir = None
         Architecture = Auto        
@@ -110,6 +113,7 @@ let private buildDotnetCliInstallArgs (param: DotNetCliInstallOptions) =
         match param.Channel with
         | Future -> "future"
         | Preview -> "preview"
+        | Beta -> "beta"
         | Production -> "production"
 
     let architectureParamValue = 
@@ -160,8 +164,8 @@ let DotnetCliInstall setParams =
 /// dotnet cli command execution options
 type DotnetOptions =
     {
-        /// Dotnet cli install directory
-        DotnetDirectory: string;
+        /// Dotnet cli executable path
+        DotnetCliPath: string;
         /// Command working directory
         WorkingDirectory: string;
         /// Custom parameters
@@ -169,7 +173,7 @@ type DotnetOptions =
     }
 
     static member Default = {
-        DotnetDirectory = DefaultDotnetCliDir
+        DotnetCliPath = dotnetCliPath DefaultDotnetCliDir
         WorkingDirectory = currentDirectory
         CustomParams = None
     }
@@ -199,7 +203,7 @@ let Dotnet (options: DotnetOptions) args =
 
     let result = 
         ExecProcessWithLambdas (fun info ->
-            info.FileName <- dotnetCliPath options.DotnetDirectory
+            info.FileName <- options.DotnetCliPath
             info.WorkingDirectory <- options.WorkingDirectory
             info.Arguments <- cmdArgs
         ) timeout true errorF messageF
@@ -467,3 +471,12 @@ let DotnetCompile setParams project =
     let result = Dotnet param.Common args    
     if not result.OK then failwithf "dotnet build failed with code %i" result.ExitCode
     traceEndTask "Dotnet:build" project
+
+/// get sdk version from global.json
+/// ## Parameters
+///
+/// - 'project' - global.json path
+let GlobalJsonSdk project =
+    let data = ReadFileAsString project
+    let info = JsonValue.Parse(data)
+    info?sdk?version.AsString()   
