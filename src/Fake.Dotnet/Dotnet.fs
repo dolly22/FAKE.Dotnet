@@ -147,7 +147,7 @@ let DotnetCliInstall setParams =
     if param.CustomInstallDir.IsSome then
         setEnvironVar "DOTNET_INSTALL_DIR" param.CustomInstallDir.Value
 
-    let args = sprintf "-NoProfile -NoLogo -Command \"%s %s; if (-not $?) { exit -1 };\"" installScript (buildDotnetCliInstallArgs param)
+    let args = sprintf "-ExecutionPolicy Bypass -NoProfile -NoLogo -NonInteractive -Command \"%s %s; if (-not $?) { exit -1 };\"" installScript (buildDotnetCliInstallArgs param)
     let exitCode = 
         ExecProcess (fun info ->
             info.FileName <- "powershell"
