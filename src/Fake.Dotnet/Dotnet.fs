@@ -6,9 +6,11 @@ open FSharp.Data
 open FSharp.Data.JsonExtensions
 open System
 open System.IO
+open System.Security.Cryptography
+open System.Text
 
-/// Dotnet cli installer script
-let private dotnetCliInstaller = "https://raw.githubusercontent.com/dotnet/cli/rel/1.0.0/scripts/obtain/dotnet-install.ps1"
+/// Get dotnet cli download uri
+let private getDotnetCliInstallerUrl branch = sprintf "https://raw.githubusercontent.com/dotnet/cli/%s/scripts/obtain/dotnet-install.ps1" branch
 
 /// Dotnet cli default install directory (set to default localappdata dotnet dir). Update this to redirect all tool commands to different location. 
 let mutable DefaultDotnetCliDir = environVar "LocalAppData" @@ "Microsoft" @@ "dotnet"
@@ -19,11 +21,9 @@ let mutable DefaultDotnetCliDir = environVar "LocalAppData" @@ "Microsoft" @@ "d
 /// - 'dotnetCliDir' - dotnet cli install directory 
 let private dotnetCliPath dotnetCliDir = dotnetCliDir @@ "dotnet.exe"
 
-// Temporary path of installer script
-let private tempInstallerScript = Path.GetTempPath() @@ "dotnet_install.ps1"
-
-let private downloadInstaller fileName =  
-    let installScript = Http.RequestStream dotnetCliInstaller
+let private downloadInstaller fileName branch =  
+    let url = getDotnetCliInstallerUrl branch
+    let installScript = Http.RequestStream url
     use outFile = File.Open(fileName, FileMode.Create)
     installScript.ResponseStream.CopyTo(outFile)
     trace (sprintf "downloaded dotnet installer to %s" fileName)
@@ -49,18 +49,18 @@ type DotnetCliVersion =
 type DotnetCliChannel =
     /// Possibly unstable, frequently changing, may contain new finished and unfinished features
     | Future
-    /// Pre-release stable with known issues and feature gaps 
-    | Preview
-    /// Beta distribution channel
-    | Beta
     /// Most stable releases
     | Production
+    /// Custom channel
+    | Channel of string
     
 /// dotnet cli install options
 type DotNetCliInstallOptions =
     {   
         /// Always download install script (otherwise install script is cached in temporary folder)
         AlwaysDownload: bool;
+        /// Download installer from this github branch
+        InstallerBranch: string;
         /// Distribution channel
         Channel: DotnetCliChannel;
         /// DotnetCli version
@@ -80,7 +80,8 @@ type DotNetCliInstallOptions =
     /// Parameter default values.
     static member Default = {
         AlwaysDownload = false
-        Channel = Beta
+        InstallerBranch = "master"
+        Channel = Future
         Version = Latest        
         CustomInstallDir = None
         Architecture = Auto        
@@ -112,9 +113,8 @@ let private buildDotnetCliInstallArgs (param: DotNetCliInstallOptions) =
     let channelParamValue = 
         match param.Channel with
         | Future -> "future"
-        | Preview -> "preview"
-        | Beta -> "beta"
         | Production -> "production"
+        | Channel x -> x
 
     let architectureParamValue = 
         match param.Architecture with
@@ -131,6 +131,13 @@ let private buildDotnetCliInstallArgs (param: DotNetCliInstallOptions) =
     ] |> Seq.filter (not << String.IsNullOrEmpty) |> String.concat " "
 
 
+let private md5 (data : byte array) : string =
+    use md5 = MD5.Create()
+    (StringBuilder(), md5.ComputeHash(data))
+    ||> Array.fold (fun sb b -> sb.Append(b.ToString("x2")))
+    |> string
+
+
 /// Install dotnet cli if required
 /// ## Parameters
 ///
@@ -138,9 +145,12 @@ let private buildDotnetCliInstallArgs (param: DotNetCliInstallOptions) =
 let DotnetCliInstall setParams =
     let param = DotNetCliInstallOptions.Default |> setParams  
 
+    let scriptName = sprintf "dotnet_install_%s.ps1" <| md5 (Encoding.ASCII.GetBytes(param.InstallerBranch))
+    let tempInstallerScript = Path.GetTempPath() @@ scriptName
+
     let installScript = 
         match param.AlwaysDownload || not(File.Exists(tempInstallerScript)) with
-            | true -> downloadInstaller tempInstallerScript
+            | true -> downloadInstaller tempInstallerScript param.InstallerBranch
             | false -> tempInstallerScript
 
     // set custom install directory
