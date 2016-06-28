@@ -80,8 +80,8 @@ type DotNetCliInstallOptions =
     /// Parameter default values.
     static member Default = {
         AlwaysDownload = false
-        InstallerBranch = "master"
-        Channel = Future
+        InstallerBranch = "rel/1.0.0"
+        Channel = Channel "rel-1.0.0"
         Version = Latest        
         CustomInstallDir = None
         Architecture = Auto        
