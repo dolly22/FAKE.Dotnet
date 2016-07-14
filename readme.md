@@ -20,6 +20,9 @@ See the [API documentation](http://dolly22.github.io/FAKE.Dotnet/apidocs) for al
 * GlobalJsonSdk - determine sdk tooling version from global.json file
 
 ### example
+
+There are sample projects and build script for [preview2](https://github.com/dolly22/FAKE.Dotnet/blob/master/samples/DotnetSamplePreview2/scripts/build.fsx) and [preview3](https://github.com/dolly22/FAKE.Dotnet/blob/master/samples/DotnetSamplePreview3/scripts/build.fsx) tooling
+
 ```fsharp
 #r "tools/FAKE.Dotnet/tools/Fake.Dotnet.dll" // include Fake.Dotnet lib
 open Fake.Dotnet
