@@ -2,7 +2,7 @@
 pushd %~dp0\scripts
 
 echo * bootstrapping paket package manager...
-.paket\paket.bootstrapper.exe 2.50.8 --prefer-nuget
+.paket\paket.bootstrapper.exe --prefer-nuget
 if errorlevel 1 (
   exit /b %errorlevel%
 )

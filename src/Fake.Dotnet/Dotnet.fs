@@ -1,4 +1,4 @@
-﻿/// dotnet cli helpers
+﻿/// .NET Core + CLI tools helpers
 module Fake.Dotnet
 
 open Fake
@@ -9,10 +9,7 @@ open System.IO
 open System.Security.Cryptography
 open System.Text
 
-/// Get dotnet cli download uri
-let private getDotnetCliInstallerUrl branch = sprintf "https://raw.githubusercontent.com/dotnet/cli/%s/scripts/obtain/dotnet-install.ps1" branch
-
-/// Dotnet cli default install directory (set to default localappdata dotnet dir). Update this to redirect all tool commands to different location. 
+/// .NET Core SDK default install directory (set to default localappdata dotnet dir). Update this to redirect all tool commands to different location. 
 let mutable DefaultDotnetCliDir = environVar "LocalAppData" @@ "Microsoft" @@ "dotnet"
 
 /// Get dotnet cli executable path
@@ -21,22 +18,66 @@ let mutable DefaultDotnetCliDir = environVar "LocalAppData" @@ "Microsoft" @@ "d
 /// - 'dotnetCliDir' - dotnet cli install directory 
 let private dotnetCliPath dotnetCliDir = dotnetCliDir @@ "dotnet.exe"
 
-let private downloadInstaller fileName branch =  
+/// Get .NET Core SDK download uri
+let private getDotnetCliInstallerUrl branch = sprintf "https://raw.githubusercontent.com/dotnet/cli/%s/scripts/obtain/dotnet-install.ps1" branch
+
+/// Download .NET Core SDK installer
+let private downloadDotnetInstaller branch fileName =  
     let url = getDotnetCliInstallerUrl branch
     let installScript = Http.RequestStream url
     use outFile = File.Open(fileName, FileMode.Create)
     installScript.ResponseStream.CopyTo(outFile)
-    trace (sprintf "downloaded dotnet installer to %s" fileName)
-    fileName
+    trace (sprintf "downloaded dotnet installer (%s) to %s" url fileName)
 
-/// dotnet cli architecture
+/// [omit]
+let private md5 (data : byte array) : string =
+    use md5 = MD5.Create()
+    (StringBuilder(), md5.ComputeHash(data))
+    ||> Array.fold (fun sb b -> sb.Append(b.ToString("x2")))
+    |> string
+
+
+/// .NET Core SDK installer download options
+type DotNetInstallerOptions =
+    {   
+        /// Always download install script (otherwise install script is cached in temporary folder)
+        AlwaysDownload: bool;
+        /// Download installer from this github branch
+        Branch: string;
+    }
+
+    /// Parameter default values.
+    static member Default = {
+        AlwaysDownload = false
+        Branch = "rel/1.0.0"
+    }
+
+/// Download .NET Core SDK installer
+/// ## Parameters
+///
+/// - 'setParams' - set download installer options
+let DotnetDownloadInstaller setParams =
+    let param = DotNetInstallerOptions.Default |> setParams
+
+    let scriptName = sprintf "dotnet_install_%s.ps1" <| md5 (Encoding.ASCII.GetBytes(param.Branch))
+    let tempInstallerScript = Path.GetTempPath() @@ scriptName
+
+    // maybe download installer script
+    match param.AlwaysDownload || not(File.Exists(tempInstallerScript)) with
+        | true -> downloadDotnetInstaller param.Branch tempInstallerScript 
+        | _ -> ()
+
+    tempInstallerScript
+
+
+/// .NET Core SDK architecture
 type DotnetCliArchitecture =
     /// this value represents currently running OS architecture 
     | Auto
     | X86
     | X64
 
-/// dotnet cli version (used to specify version when installing dotnet cli)
+/// .NET Core SDK version (used to specify version when installing .NET Core SDK)
 type DotnetCliVersion =
     /// most latest build on specific channel 
     | Latest
@@ -44,26 +85,15 @@ type DotnetCliVersion =
     | Lkg
     /// 4-part version in a format A.B.C.D - represents specific version of build
     | Version of string
-
-/// dotnet cli channel
-type DotnetCliChannel =
-    /// Possibly unstable, frequently changing, may contain new finished and unfinished features
-    | Future
-    /// Most stable releases
-    | Production
-    /// Custom channel
-    | Channel of string
-    
-/// dotnet cli install options
+  
+/// .NET Core SDK install options
 type DotNetCliInstallOptions =
     {   
-        /// Always download install script (otherwise install script is cached in temporary folder)
-        AlwaysDownload: bool;
-        /// Download installer from this github branch
-        InstallerBranch: string;
-        /// Distribution channel
-        Channel: DotnetCliChannel;
-        /// DotnetCli version
+        /// Custom installer obtain (download) options
+        InstallerOptions: DotNetInstallerOptions -> DotNetInstallerOptions
+        /// .NET Core SDK channel (defaults to normalized installer branch)
+        Channel: string option;
+        /// .NET Core SDK version
         Version: DotnetCliVersion;
         /// Custom installation directory (for local build installation)
         CustomInstallDir: string option
@@ -79,15 +109,25 @@ type DotNetCliInstallOptions =
 
     /// Parameter default values.
     static member Default = {
-        AlwaysDownload = false
-        InstallerBranch = "rel/1.0.0"
-        Channel = Channel "rel-1.0.0"
+        InstallerOptions = id
+        Channel = None
         Version = Latest        
         CustomInstallDir = None
         Architecture = Auto        
         DebugSymbols = false
         DryRun = false
         NoPath = true
+    }
+
+/// .NET Core SDK install options preconfigured for preview2 tooling
+let Preview2ToolingOptions options = 
+    { options with
+        InstallerOptions = (fun io -> 
+            { io with
+                Branch = "v1.0.0-preview2"                    
+            })
+        Channel = Some "preview"
+        Version = Version "1.0.0-preview2-003121"
     }
 
 /// [omit]
@@ -110,11 +150,13 @@ let private buildDotnetCliInstallArgs (param: DotNetCliInstallOptions) =
         | Lkg -> "lkg"
         | Version ver -> ver
 
+    // get channel value from installer branch info    
     let channelParamValue = 
         match param.Channel with
-        | Future -> "future"
-        | Production -> "production"
-        | Channel x -> x
+            | Some ch -> ch
+            | None -> 
+                let installerOptions = DotNetInstallerOptions.Default |> param.InstallerOptions
+                installerOptions.Branch |> replace "/" "-"
 
     let architectureParamValue = 
         match param.Architecture with
@@ -122,40 +164,24 @@ let private buildDotnetCliInstallArgs (param: DotNetCliInstallOptions) =
         | X86 -> Some "x86"
         | X64 -> Some "x64"
     [   
-        sprintf "-channel '%s'" channelParamValue
-        sprintf "-version '%s'" versionParamValue        
-        optionToParam architectureParamValue "-architecture %s"
+        sprintf "-Channel '%s'" channelParamValue
+        sprintf "-Version '%s'" versionParamValue        
+        optionToParam architectureParamValue "-Architecture %s"
+        optionToParam param.CustomInstallDir "-InstallDir '%s'"
         boolToFlag param.DebugSymbols "-DebugSymbols"
         boolToFlag param.DryRun "-DryRun"
         boolToFlag param.NoPath "-NoPath"
     ] |> Seq.filter (not << String.IsNullOrEmpty) |> String.concat " "
 
 
-let private md5 (data : byte array) : string =
-    use md5 = MD5.Create()
-    (StringBuilder(), md5.ComputeHash(data))
-    ||> Array.fold (fun sb b -> sb.Append(b.ToString("x2")))
-    |> string
 
-
-/// Install dotnet cli if required
+/// Install .NET Core SDK if required
 /// ## Parameters
 ///
 /// - 'setParams' - set installation options
 let DotnetCliInstall setParams =
     let param = DotNetCliInstallOptions.Default |> setParams  
-
-    let scriptName = sprintf "dotnet_install_%s.ps1" <| md5 (Encoding.ASCII.GetBytes(param.InstallerBranch))
-    let tempInstallerScript = Path.GetTempPath() @@ scriptName
-
-    let installScript = 
-        match param.AlwaysDownload || not(File.Exists(tempInstallerScript)) with
-            | true -> downloadInstaller tempInstallerScript param.InstallerBranch
-            | false -> tempInstallerScript
-
-    // set custom install directory
-    if param.CustomInstallDir.IsSome then
-        setEnvironVar "DOTNET_INSTALL_DIR" param.CustomInstallDir.Value
+    let installScript = DotnetDownloadInstaller param.InstallerOptions
 
     let args = sprintf "-ExecutionPolicy Bypass -NoProfile -NoLogo -NonInteractive -Command \"%s %s; if (-not $?) { exit -1 };\"" installScript (buildDotnetCliInstallArgs param)
     let exitCode = 
@@ -167,9 +193,12 @@ let DotnetCliInstall setParams =
 
     if exitCode <> 0 then
         // force download new installer script
-        traceError "dotnet cli install failed, trying to redownload installer..."
-        let installScript = downloadInstaller tempInstallerScript
-        failwithf "dotnet cli install failed with code %i" exitCode
+        traceError ".NET Core SDK install failed, trying to redownload installer..."
+        DotnetDownloadInstaller (param.InstallerOptions >> (fun o -> 
+            { o with 
+                AlwaysDownload = true
+            })) |> ignore
+        failwithf ".NET Core SDK install failed with code %i" exitCode
 
 /// dotnet cli command execution options
 type DotnetOptions =

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fake.Dotnet", "src\Fake.Dotnet\Fake.Dotnet.fsproj", "{CDA30129-14F6-444B-80B0-E8E608716570}"
 EndProject
@@ -12,9 +12,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dnx", "Dnx", "{35D3F7C8-620
 		samples\DnxSample\scripts\build.fsx = samples\DnxSample\scripts\build.fsx
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dotnet", "Dotnet", "{67225641-7420-4E86-B7E7-8F75C963F535}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DotnetPreview2", "DotnetPreview2", "{67225641-7420-4E86-B7E7-8F75C963F535}"
 	ProjectSection(SolutionItems) = preProject
-		samples\DotnetSample\scripts\build.fsx = samples\DotnetSample\scripts\build.fsx
+		samples\DotnetSamplePreview2\scripts\build.fsx = samples\DotnetSamplePreview2\scripts\build.fsx
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DotnetPreview3", "DotnetPreview3", "{827295DD-2E33-473A-B70D-434088FB209C}"
+	ProjectSection(SolutionItems) = preProject
+		samples\DotnetSamplePreview3\scripts\build.fsx = samples\DotnetSamplePreview3\scripts\build.fsx
 	EndProjectSection
 EndProject
 Global
@@ -34,5 +39,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{35D3F7C8-620D-4D9E-A990-1B89A0C1BDDA} = {3FEB1C41-738B-4838-80AB-805BB8042FA5}
 		{67225641-7420-4E86-B7E7-8F75C963F535} = {3FEB1C41-738B-4838-80AB-805BB8042FA5}
+		{827295DD-2E33-473A-B70D-434088FB209C} = {3FEB1C41-738B-4838-80AB-805BB8042FA5}
 	EndGlobalSection
 EndGlobal

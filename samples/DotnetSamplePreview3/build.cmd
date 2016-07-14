@@ -1,5 +1,5 @@
 @echo off
-pushd %~dp0
+pushd %~dp0\scripts
 
 echo * bootstrapping paket package manager...
 .paket\paket.bootstrapper.exe --prefer-nuget
@@ -13,8 +13,12 @@ if errorlevel 1 (
   exit /b %errorlevel%
 )
 
+popd
+
+pushd %~dp0
+
 echo * starting FAKE build...
 rem add --break option for debugging
-packages\FAKE\tools\Fake.exe build.fsx %*
+scripts\packages\FAKE.Core\tools\Fake.exe scripts\build.fsx %*
 
 popd

@@ -1,13 +1,14 @@
 # FAKE.Dotnet
 
-"FAKE.Dotnet" is FAKE build automation system extension for [dotnet cli](http://github.com/dotnet/cli) and it's predecessor [DNX](https://github.com/aspnet/dnx). Currently supports only windows.
+"FAKE.Dotnet" is FAKE build automation system extension for [.NET Core SDK](http://github.com/dotnet/cli) and it's predecessor [DNX](https://github.com/aspnet/dnx). Currently supports only windows.
 
 See the [API documentation](http://dolly22.github.io/FAKE.Dotnet/apidocs) for all available helpers.
 
-## dotnet cli usage
+## .NET Core SDK helper usage
 
-* DotnetCliInstall - install dotnet cli if needed
-* Dotnet - generic dotnet command helper
+* DotnetDownloadInstaller - download .NET Core SDK installer
+* DotnetCliInstall - install .NET Core SDK if needed
+* Dotnet - generic dotnet cli command helper
 * DotnetRestore - dotnet restore dependencies helper
 * DotnetPack - dotnet pack helper
 * DotnetPublish - dotnet publish helper
@@ -19,19 +20,19 @@ See the [API documentation](http://dolly22.github.io/FAKE.Dotnet/apidocs) for al
 open Fake.Dotnet 
 	
 Target "Initialize" (fun _ ->
-    DotnetCliInstall id
+	DotnetCliInstall id
 )
 
 Target "BuildProjects" (fun _ ->
-      !! "src/*/project.json" 
-      |> Seq.iter(fun proj ->  
-          DotnetRestore id proj
-          DotnetPack (fun c -> 
-              { c with 
-                  Configuration = Debug;                    
-                  OutputPath = Some (currentDirectory @@ "artifacts")
-              }) proj
-      )
+	  !! "src/*/project.json" 
+	  |> Seq.iter(fun proj ->  
+		  DotnetRestore id proj
+		  DotnetPack (fun c -> 
+			  { c with 
+				  Configuration = Debug;                    
+				  OutputPath = Some (currentDirectory @@ "artifacts")
+			  }) proj
+	  )
 )
 
 "Initialize"            // define the dependencies
@@ -60,19 +61,19 @@ Run "BuildProjects"
 open Fake.Dotnet 
 	
 Target "Initialize" (fun _ ->
-    DnvmUpgrade id
+	DnvmUpgrade id
 )
 
 Target "BuildProjects" (fun _ ->
-      !! "src/*/project.json" 
-      |> Seq.iter(fun proj ->  
-          DnuRestore id proj
-          DnuPack (fun c -> 
-              { c with 
-                  Configuration = Debug;                    
-                  OutputPath = Some (currentDirectory @@ "artifacts")
-              }) proj
-      )
+	  !! "src/*/project.json" 
+	  |> Seq.iter(fun proj ->  
+		  DnuRestore id proj
+		  DnuPack (fun c -> 
+			  { c with 
+				  Configuration = Debug;                    
+				  OutputPath = Some (currentDirectory @@ "artifacts")
+			  }) proj
+	  )
 )
 
 "Initialize"            // define the dependencies

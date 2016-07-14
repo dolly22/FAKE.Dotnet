@@ -1,0 +1,7 @@
+REFERENCES: STRICT
+REDIRECTS: OFF
+IMPORT-TARGETS: FALSE
+NUGET
+  remote: https://www.nuget.org/api/v2
+  specs:
+    FAKE.Core (4.25.5)
