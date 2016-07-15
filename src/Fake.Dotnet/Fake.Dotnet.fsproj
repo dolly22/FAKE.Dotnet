@@ -51,7 +51,6 @@
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="Dnx.fs" />
     <Compile Include="..\SolutionInfo.fs">
       <Link>SolutionInfo.fs</Link>
     </Compile>
