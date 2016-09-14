@@ -20,7 +20,7 @@ Target "Clean" (fun _ ->
 )
 
 Target "InstallDotnet" (fun _ ->
-    DotnetCliInstall Preview2ToolingOptions
+    DotnetCliInstall Preview2Tooling101Options
 )
 
 Target "BuildProjects" (fun _ ->

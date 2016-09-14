@@ -119,16 +119,24 @@ type DotNetCliInstallOptions =
         NoPath = true
     }
 
-/// .NET Core SDK install options preconfigured for preview2 tooling
-let Preview2ToolingOptions options = 
+// Preview2 options for concrete version
+let Preview2ToolingVersionOptions options (version: string) = 
     { options with
         InstallerOptions = (fun io -> 
             { io with
                 Branch = "v1.0.0-preview2"                    
             })
         Channel = Some "preview"
-        Version = Version "1.0.0-preview2-003121"
+        Version = Version (sprintf "1.0.0-preview2-%s" version)
     }
+
+/// .NET Core SDK install options preconfigured for preview2 tooling (1.0.0 .NET core version)
+let Preview2ToolingOptions options = 
+    Preview2ToolingVersionOptions options "003121"
+
+/// .NET Core SDK install options preconfigured for preview2 tooling (1.0.1 .NET core version)
+let Preview2Tooling101Options options = 
+    Preview2ToolingVersionOptions options "003131"
 
 /// [omit]
 let private optionToParam option paramFormat =
