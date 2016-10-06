@@ -2,8 +2,8 @@
 module Fake.Dotnet
 
 open Fake
-open FSharp.Data
-open FSharp.Data.JsonExtensions
+//open FSharp.Data
+//open FSharp.Data.JsonExtensions
 open System
 open System.IO
 open System.Security.Cryptography
@@ -24,9 +24,9 @@ let private getDotnetCliInstallerUrl branch = sprintf "https://raw.githubusercon
 /// Download .NET Core SDK installer
 let private downloadDotnetInstaller branch fileName =  
     let url = getDotnetCliInstallerUrl branch
-    let installScript = Http.RequestStream url
-    use outFile = File.Open(fileName, FileMode.Create)
-    installScript.ResponseStream.CopyTo(outFile)
+//    let installScript = Http.RequestStream url
+//    use outFile = File.Open(fileName, FileMode.Create)
+//    installScript.ResponseStream.CopyTo(outFile)
     trace (sprintf "downloaded dotnet installer (%s) to %s" url fileName)
 
 /// [omit]
@@ -523,7 +523,7 @@ let DotnetCompile setParams project =
 /// ## Parameters
 ///
 /// - 'project' - global.json path
-let GlobalJsonSdk project =
-    let data = ReadFileAsString project
-    let info = JsonValue.Parse(data)
-    info?sdk?version.AsString()   
+//let GlobalJsonSdk project =
+//    let data = ReadFileAsString project
+//    let info = JsonValue.Parse(data)
+//    info?sdk?version.AsString()   
