@@ -27,23 +27,24 @@ There is sample project and build script for [1.0.1 SDK](https://github.com/doll
 open Fake.Dotnet
 
 Target "Initialize" (fun _ ->
-	DotnetCliInstall id
+    DotnetSdkInstall NetCore101SdkOptions
 )
 
 Target "BuildProjects" (fun _ ->
-	  !! "src/*/project.json"
-	  |> Seq.iter(fun proj ->
-		  DotnetRestore id proj
-		  DotnetPack (fun c ->
-			  { c with
-				  Configuration = Debug;
-				  OutputPath = Some (currentDirectory @@ "artifacts")
-			  }) proj
-	  )
+    let solutionFile = "solution.sln"
+
+    DotnetRestore id solutionFile
+
+    DotnetPack (fun c -> 
+        { c with 
+            Configuration = Debug;
+            VersionSuffix = Some "ci-100";
+            OutputPath = Some (currentDirectory @@ "artifacts")
+        }) solutionFile
 )
 
 "Initialize"            // define the dependencies
-	  ==> "BuildProjects"
+      ==> "BuildProjects"
 
 Run "BuildProjects"
 ```
