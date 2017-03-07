@@ -2,7 +2,7 @@
 
 [![NuGet Status](http://img.shields.io/nuget/v/FAKE.dotnet.svg?style=flat)](https://www.nuget.org/packages/FAKE.Dotnet/)
 
-"FAKE.Dotnet" is FAKE build automation system extension for [.NET Core CLI](http://github.com/dotnet/cli) and it's predecessor [DNX](https://github.com/aspnet/dnx). It contains helpers to download and install specific versions .NET Core SDK with CLI. Currently supports only windows.
+"FAKE.Dotnet" is FAKE build automation system extension for [.NET Core CLI](http://github.com/dotnet/cli). It contains helpers to download and install specific versions .NET Core SDK with CLI. Currently supports only windows.
 
 See the [API documentation](http://dolly22.github.io/FAKE.Dotnet/apidocs) for all available helpers and [Release Notes](https://github.com/dolly22/FAKE.Dotnet/blob/master/release_notes.md) for version details
 
@@ -17,11 +17,10 @@ See the [API documentation](http://dolly22.github.io/FAKE.Dotnet/apidocs) for al
 * DotnetPack - dotnet pack helper
 * DotnetPublish - dotnet publish helper
 * DotnetCompile - dotnet compile helper
-* GlobalJsonSdk - determine sdk tooling version from global.json file
 
 ### example
 
-There are sample projects and build script for [preview2](https://github.com/dolly22/FAKE.Dotnet/blob/master/samples/DotnetSamplePreview2/scripts/build.fsx) and [preview3](https://github.com/dolly22/FAKE.Dotnet/blob/master/samples/DotnetSamplePreview3/scripts/build.fsx) tooling
+There is sample project and build script for [1.0.1 SDK](https://github.com/dolly22/FAKE.Dotnet/blob/master/samples/NetCoreSdk101/scripts/build.fsx) tooling
 
 ```fsharp
 #r "tools/FAKE.Dotnet/tools/Fake.Dotnet.dll" // include Fake.Dotnet lib
@@ -48,48 +47,6 @@ Target "BuildProjects" (fun _ ->
 
 Run "BuildProjects"
 ```
-
-## DNX usage
-
-* DnvmToolInstall - install dnvm if needed
-* Dnvm - generic dnvm command helper
-* DnvmInstall - dnvm install command helper
-* DnvmUpgrade - dnvm upgrade command helper
-* DnvmUpdateSelf - dnvm update-self command helper
-* DnvmExec - dnvm exec command helper
-* Dnu - generic dnu command helper
-* DnuRestore - dnu restore dependencies helper
-* DnuPublish - dnu publish command helper
-* DnuPack - dnu pack command helper
-
-
-### Example usage - DNX
-```fsharp
-#r "tools/FAKE.Dotnet/tools/Fake.Dotnet.dll" // include Fake.Dotnet lib
-open Fake.Dotnet
-
-Target "Initialize" (fun _ ->
-	DnvmUpgrade id
-)
-
-Target "BuildProjects" (fun _ ->
-	  !! "src/*/project.json"
-	  |> Seq.iter(fun proj ->
-		  DnuRestore id proj
-		  DnuPack (fun c ->
-			  { c with
-				  Configuration = Debug;
-				  OutputPath = Some (currentDirectory @@ "artifacts")
-			  }) proj
-	  )
-)
-
-"Initialize"            // define the dependencies
-	  ==> "BuildProjects"
-
-Run "BuildProjects"
-```
-
 
 # Build the project
 

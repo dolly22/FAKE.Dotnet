@@ -1,8 +1,0 @@
-import_targets: false
-redirects: off
-references: strict
-
-source https://nuget.org/api/v2
-
-nuget FAKE.Core
-

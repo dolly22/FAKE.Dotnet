@@ -3,7 +3,6 @@ module Fake.Dotnet
 
 open Fake
 open FSharp.Data
-open FSharp.Data.JsonExtensions
 open System
 open System.IO
 open System.Security.Cryptography
@@ -99,44 +98,47 @@ type DotNetCliInstallOptions =
         CustomInstallDir: string option
         /// Architecture
         Architecture: DotnetCliArchitecture;
+        /// Installs just the shared runtime bits, not the entire SDK
+        SharedRuntime: bool;
         /// Include symbols in the installation (Switch does not work yet. Symbols zip is not being uploaded yet) 
         DebugSymbols: bool;
         /// If set it will not perform installation but instead display what command line to use
         DryRun: bool
         /// Do not update path variable
         NoPath: bool
+        /// Displays diagnostics information.
+        Verbose: bool
+        ///  If set, the installer will use the proxy when making web requests
+        ProxyAddress: string option
     }
 
     /// Parameter default values.
     static member Default = {
         InstallerOptions = id
         Channel = None
-        Version = Latest        
+        Version = Latest
         CustomInstallDir = None
-        Architecture = Auto        
+        Architecture = Auto
+        SharedRuntime = false
         DebugSymbols = false
         DryRun = false
         NoPath = true
+        Verbose = false
+        ProxyAddress = None
     }
 
-// Preview2 options for concrete version
-let Preview2ToolingVersionOptions options (version: string) = 
+
+/// Version shipped with VS2017 (1.0.0 SDK, shared framework 1.0.4 and 1.1.1)
+let NetCore100SdkOptions options: DotNetCliInstallOptions = 
     { options with
-        InstallerOptions = (fun io -> 
-            { io with
-                Branch = "v1.0.0-preview2"                    
-            })
-        Channel = Some "preview"
-        Version = Version (sprintf "1.0.0-preview2-%s" version)
+        Version = Version "1.0.0"
     }
 
-/// .NET Core SDK install options preconfigured for preview2 tooling (1.0.0 .NET core version)
-let Preview2ToolingOptions options = 
-    Preview2ToolingVersionOptions options "003121"
-
-/// .NET Core SDK install options preconfigured for preview2 tooling (1.0.1 .NET core version)
-let Preview2Tooling101Options options = 
-    Preview2ToolingVersionOptions options "003131"
+/// Released 2017/03/07 (1.0.1 SDK, shared framework 1.0.4 and 1.1.1)
+let NetCore101SdkOptions options: DotNetCliInstallOptions = 
+    { options with
+        Version = Version "1.0.1"
+    }
 
 /// [omit]
 let private optionToParam option paramFormat =
@@ -176,9 +178,12 @@ let private buildDotnetCliInstallArgs (param: DotNetCliInstallOptions) =
         sprintf "-Version '%s'" versionParamValue        
         optionToParam architectureParamValue "-Architecture %s"
         optionToParam param.CustomInstallDir "-InstallDir '%s'"
+        optionToParam param.ProxyAddress "-ProxyAddress '%s'"
+        boolToFlag param.SharedRuntime "-SharedRuntime"
         boolToFlag param.DebugSymbols "-DebugSymbols"
         boolToFlag param.DryRun "-DryRun"
         boolToFlag param.NoPath "-NoPath"
+        boolToFlag param.Verbose "-Verbose"        
     ] |> Seq.filter (not << String.IsNullOrEmpty) |> String.concat " "
 
 
@@ -518,12 +523,3 @@ let DotnetCompile setParams project =
     let result = Dotnet param.Common args    
     if not result.OK then failwithf "dotnet build failed with code %i" result.ExitCode
     traceEndTask "Dotnet:build" project
-
-/// get sdk version from global.json
-/// ## Parameters
-///
-/// - 'project' - global.json path
-let GlobalJsonSdk project =
-    let data = ReadFileAsString project
-    let info = JsonValue.Parse(data)
-    info?sdk?version.AsString()   
