@@ -16,7 +16,7 @@ See the [API documentation](http://dolly22.github.io/FAKE.Dotnet/apidocs) for al
 * DotnetRestore - dotnet restore packages helper
 * DotnetPack - dotnet pack helper
 * DotnetPublish - dotnet publish helper
-* DotnetCompile - dotnet compile helper
+* DotnetBuild - dotnet build helper
 
 ### example
 

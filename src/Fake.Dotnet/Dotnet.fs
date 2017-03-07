@@ -276,21 +276,22 @@ let private argOption name value =
         | false -> ""
 
 /// dotnet restore verbosity
-type NugetRestoreVerbosity =
-    | Debug
-    | Verbose
-    | Information
+type DotnetVerbosity =
+    | Quiet
     | Minimal
-    | Warning
-    | Error
+    | Normal
+    | Detailed
+    | Diagnostic
 
 /// dotnet restore command options
 type DotnetRestoreOptions =
     {   
         /// Common tool options
         Common: DotnetOptions;
-        /// Nuget feeds to search updates in. Use default if empty.
-        Sources: string list;
+        /// Specifies a NuGet package source to use during the restore (-s|--source).
+        Source: string option;
+        /// Target runtime to restore packages for. (-r|--runtime <RUNTIME_IDENTIFIER>).
+        Runtime: string option;
         /// Directory to install packages in (--packages).
         Packages: string list;
         /// Path to the nuget configuration file (nuget.config).
@@ -298,38 +299,44 @@ type DotnetRestoreOptions =
         /// No cache flag (--no-cache)
         NoCache: bool;
         /// Restore logging verbosity (--verbosity)
-        Verbosity: NugetRestoreVerbosity option
+        Verbosity: DotnetVerbosity option
         /// Only warning failed sources if there are packages meeting version requirement (--ignore-failed-sources)
         IgnoreFailedSources: bool;
         /// Disables restoring multiple projects in parallel (--disable-parallel)
         DisableParallel: bool;
+        /// Set this flag to ignore project to project references and only restore the root project (--no-dependencies)
+        NoDependencies: bool;
     }
 
     /// Parameter default values.
     static member Default = {
         Common = DotnetOptions.Default
-        Sources = []
+        Source = None
+        Runtime = None
         Packages = []
         ConfigFile = None        
         NoCache = false
         Verbosity = None
         IgnoreFailedSources = false
         DisableParallel = false
+        NoDependencies = false
     }
 
 /// [omit]
 let private buildRestoreArgs (param: DotnetRestoreOptions) =
-    [   param.Sources |> argList2 "source"
+    [   param.Source |> Option.toList |> argList2 "source"
+        param.Runtime |> Option.toList |> argList2 "runtime"
         param.Packages |> argList2 "packages"
         param.ConfigFile |> Option.toList |> argList2 "configFile"
         param.NoCache |> argOption "no-cache" 
         param.IgnoreFailedSources |> argOption "ignore-failed-sources" 
         param.DisableParallel |> argOption "disable-parallel" 
+        param.NoDependencies |> argOption "no-dependencies" 
         param.Verbosity |> Option.toList |> Seq.map (fun v -> v.ToString()) |> argList2 "verbosity"
     ] |> Seq.filter (not << String.IsNullOrEmpty) |> String.concat " "
 
 
-/// Execute dotnet restore command
+/// Execute dotnet restore (Restore dependencies specified in the .NET project)
 /// ## Parameters
 ///
 /// - 'setParams' - set restore command parameters
@@ -363,7 +370,7 @@ type DotNetPackOptions =
         Common: DotnetOptions;
         /// Pack configuration (--configuration)
         Configuration: BuildConfiguration;
-        /// Version suffix to use
+        /// Defines the value for the $(VersionSuffix) property in the project
         VersionSuffix: string option;
         /// Build base path (--build-base-path)
         BuildBasePath: string option;
@@ -371,6 +378,14 @@ type DotNetPackOptions =
         OutputPath: string option;
         /// No build flag (--no-build)
         NoBuild: bool;
+        /// Include packages with symbols in addition to regular packages in output directory (--include-symbols)
+        IncludeSymbols: bool;
+        /// Include PDBs and source files. Source files go into the src folder in the resulting nuget package (--include-source)
+        IncludeSource: bool;
+        /// Set the serviceable flag in the package. For more information, please see https://aka.ms/nupkgservicing (-s|--serviceable)
+        Serviceable: bool;
+        /// Set the verbosity level of the command. (--verbosity)
+        Verbosity: DotnetVerbosity option
     }
 
     /// Parameter default values.
@@ -381,6 +396,10 @@ type DotNetPackOptions =
         BuildBasePath = None
         OutputPath = None
         NoBuild = false
+        IncludeSymbols = false
+        IncludeSource = false
+        Serviceable = false
+        Verbosity = None
     }
 
 /// [omit]
@@ -391,6 +410,10 @@ let private buildPackArgs (param: DotNetPackOptions) =
         param.BuildBasePath |> Option.toList |> argList2 "build-base-path"
         param.OutputPath |> Option.toList |> argList2 "output"
         param.NoBuild |> argOption "no-build" 
+        param.IncludeSymbols |> argOption "include-symbols" 
+        param.IncludeSource |> argOption "include-source" 
+        param.Serviceable |> argOption "serviceable" 
+        param.Verbosity |> Option.toList |> Seq.map (fun v -> v.ToString()) |> argList2 "verbosity"
     ] |> Seq.filter (not << String.IsNullOrEmpty) |> String.concat " "
 
 
@@ -419,14 +442,12 @@ type DotNetPublishOptions =
         Framework: string option;
         /// Target runtime to publish for (--runtime)
         Runtime: string option;
-        /// Build base path (--build-base-path)
-        BuildBasePath: string option;
         /// Output path (--output)
         OutputPath: string option;
-        /// Defines what `*` should be replaced with in version field in project.json (--version-suffix)
+        /// Defines the value for the $(VersionSuffix) property in the project(--version-suffix)
         VersionSuffix: string option;
-        /// No build flag (--no-build)
-        NoBuild: bool;
+        /// Set the verbosity level of the command. (--verbosity)
+        Verbosity: DotnetVerbosity option
     }
 
     /// Parameter default values.
@@ -435,10 +456,9 @@ type DotNetPublishOptions =
         Configuration = Release
         Framework = None
         Runtime = None
-        BuildBasePath = None
         OutputPath = None
         VersionSuffix = None
-        NoBuild = false
+        Verbosity = None
     }
 
 /// [omit]
@@ -447,10 +467,9 @@ let private buildPublishArgs (param: DotNetPublishOptions) =
         buildConfigurationArg param.Configuration
         param.Framework |> Option.toList |> argList2 "framework"
         param.Runtime |> Option.toList |> argList2 "runtime"
-        param.BuildBasePath |> Option.toList |> argList2 "build-base-path"
         param.OutputPath |> Option.toList |> argList2 "output"
         param.VersionSuffix |> Option.toList |> argList2 "version-suffix"
-        param.NoBuild |> argOption "no-build" 
+        param.Verbosity |> Option.toList |> Seq.map (fun v -> v.ToString()) |> argList2 "verbosity"
     ] |> Seq.filter (not << String.IsNullOrEmpty) |> String.concat " "
 
 
@@ -479,12 +498,16 @@ type DotNetBuildOptions =
         Framework: string option;
         /// Target runtime to publish for (--runtime)
         Runtime: string option;
-        /// Build base path (--build-base-path)
-        BuildBasePath: string option;
         /// Output path (--output)
         OutputPath: string option;
-        /// Native flag (--native)
-        Native: bool;
+        /// Disables incremental build (--no-incremental)
+        NoIncremental: bool;
+        /// Set this flag to ignore project-to-project references and only build the root project (--no-dependencies)
+        NoDependencies: bool;
+        /// Defines the value for the $(VersionSuffix) property in the project(--version-suffix)
+        VersionSuffix: string option;
+        /// Set the verbosity level of the command. (--verbosity)
+        Verbosity: DotnetVerbosity option
     }
 
     /// Parameter default values.
@@ -493,9 +516,11 @@ type DotNetBuildOptions =
         Configuration = Release
         Framework = None
         Runtime = None
-        BuildBasePath = None
         OutputPath = None
-        Native = false
+        NoIncremental = false
+        NoDependencies = false
+        VersionSuffix = None
+        Verbosity = None
     }
 
 
@@ -505,9 +530,11 @@ let private buildBuildArgs (param: DotNetBuildOptions) =
         buildConfigurationArg param.Configuration
         param.Framework |> Option.toList |> argList2 "framework"
         param.Runtime |> Option.toList |> argList2 "runtime"
-        param.BuildBasePath |> Option.toList |> argList2 "build-base-path"
         param.OutputPath |> Option.toList |> argList2 "output"
-        (if param.Native then "--native" else "")
+        param.NoIncremental |> argOption "no-incremental" 
+        param.NoDependencies |> argOption "no-dependencies" 
+        param.VersionSuffix |> Option.toList |> argList2 "version-suffix"
+        param.Verbosity |> Option.toList |> Seq.map (fun v -> v.ToString()) |> argList2 "verbosity"
     ] |> Seq.filter (not << String.IsNullOrEmpty) |> String.concat " "
 
 
@@ -516,7 +543,7 @@ let private buildBuildArgs (param: DotNetBuildOptions) =
 ///
 /// - 'setParams' - set compile command parameters
 /// - 'project' - project to compile
-let DotnetCompile setParams project =    
+let DotnetBuild setParams project =    
     traceStartTask "Dotnet:build" project
     let param = DotNetBuildOptions.Default |> setParams    
     let args = sprintf "build %s %s" project (buildBuildArgs param)
