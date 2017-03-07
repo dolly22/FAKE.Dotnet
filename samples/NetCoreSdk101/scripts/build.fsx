@@ -14,37 +14,37 @@
 open Fake
 open Fake.Dotnet
 
+let solutionFile = "NetCoreSdk101.sln"
+
 Target "Clean" (fun _ ->
     !! "artifacts" ++ "src/*/bin" ++ "test/*/bin"
         |> DeleteDirs
 )
 
 Target "InstallDotnet" (fun _ ->
-    DotnetCliInstall NetCore111SdkOptions
+    DotnetCliInstall NetCore101SdkOptions 
 )
 
-Target "BuildProjects" (fun _ ->
-    !! "src/*/project.json" 
-        |> Seq.iter(fun proj ->  
+Target "RestorePackages" (fun _ ->
+    DotnetRestore id solutionFile
+)
 
-            // restore project dependencies
-            DotnetRestore id proj
-
-            // build project and produce outputs
-            DotnetPack (fun c -> 
-                { c with 
-                    Configuration = Debug;
-                    VersionSuffix = Some "ci-100";
-                    OutputPath = Some (currentDirectory @@ "artifacts")
-                }) proj
-        )
+Target "BuildSolution" (fun _ ->
+    // build solution and create nuget packages
+    DotnetPack (fun c -> 
+        { c with 
+            Configuration = Debug;
+            VersionSuffix = Some "ci-100";
+            OutputPath = Some (currentDirectory @@ "artifacts")
+        }) solutionFile
 )
 
 Target "Default" <| DoNothing
 
 "Clean"
     ==> "InstallDotnet"
-    ==> "BuildProjects"
+    ==> "RestorePackages"
+    ==> "BuildSolution"
     ==> "Default"
 
 // start build
