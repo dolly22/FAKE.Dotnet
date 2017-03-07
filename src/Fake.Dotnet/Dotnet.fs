@@ -9,24 +9,24 @@ open System.Security.Cryptography
 open System.Text
 
 /// .NET Core SDK default install directory (set to default localappdata dotnet dir). Update this to redirect all tool commands to different location. 
-let mutable DefaultDotnetCliDir = environVar "LocalAppData" @@ "Microsoft" @@ "dotnet"
+let mutable DefaultDotnetSdkDir = environVar "LocalAppData" @@ "Microsoft" @@ "dotnet"
 
 /// Get dotnet cli executable path
 /// ## Parameters
 ///
-/// - 'dotnetCliDir' - dotnet cli install directory 
-let private dotnetCliPath dotnetCliDir = dotnetCliDir @@ "dotnet.exe"
+/// - 'dotnetSdkDir' - dotnet cli install directory 
+let private dotnetCliPath dotnetSdkDir = dotnetSdkDir @@ "dotnet.exe"
 
 /// Get .NET Core SDK download uri
-let private getDotnetCliInstallerUrl branch = sprintf "https://raw.githubusercontent.com/dotnet/cli/%s/scripts/obtain/dotnet-install.ps1" branch
+let private getDotnetSdkInstallerUrl branch = sprintf "https://raw.githubusercontent.com/dotnet/cli/%s/scripts/obtain/dotnet-install.ps1" branch
 
 /// Download .NET Core SDK installer
-let private downloadDotnetInstaller branch fileName =  
-    let url = getDotnetCliInstallerUrl branch
+let private downloadDotnetSdkInstaller branch fileName =  
+    let url = getDotnetSdkInstallerUrl branch
     let installScript = Http.RequestStream url
     use outFile = File.Open(fileName, FileMode.Create)
     installScript.ResponseStream.CopyTo(outFile)
-    trace (sprintf "downloaded dotnet installer (%s) to %s" url fileName)
+    trace (sprintf "downloaded dotnet sdk installer (%s) to %s" url fileName)
 
 /// [omit]
 let private md5 (data : byte array) : string =
@@ -37,7 +37,7 @@ let private md5 (data : byte array) : string =
 
 
 /// .NET Core SDK installer download options
-type DotNetInstallerOptions =
+type DotnetSdkInstallerOptions =
     {   
         /// Always download install script (otherwise install script is cached in temporary folder)
         AlwaysDownload: bool;
@@ -55,29 +55,29 @@ type DotNetInstallerOptions =
 /// ## Parameters
 ///
 /// - 'setParams' - set download installer options
-let DotnetDownloadInstaller setParams =
-    let param = DotNetInstallerOptions.Default |> setParams
+let DotnetSdkDownloadInstaller setParams =
+    let param = DotnetSdkInstallerOptions.Default |> setParams
 
     let scriptName = sprintf "dotnet_install_%s.ps1" <| md5 (Encoding.ASCII.GetBytes(param.Branch))
     let tempInstallerScript = Path.GetTempPath() @@ scriptName
 
     // maybe download installer script
     match param.AlwaysDownload || not(File.Exists(tempInstallerScript)) with
-        | true -> downloadDotnetInstaller param.Branch tempInstallerScript 
+        | true -> downloadDotnetSdkInstaller param.Branch tempInstallerScript 
         | _ -> ()
 
     tempInstallerScript
 
 
 /// .NET Core SDK architecture
-type DotnetCliArchitecture =
+type DotnetSdkArchitecture =
     /// this value represents currently running OS architecture 
     | Auto
     | X86
     | X64
 
 /// .NET Core SDK version (used to specify version when installing .NET Core SDK)
-type DotnetCliVersion =
+type DotnetSdkVersion =
     /// most latest build on specific channel 
     | Latest
     ///  last known good version on specific channel (Note: LKG work is in progress. Once the work is finished, this will become new default)
@@ -86,18 +86,18 @@ type DotnetCliVersion =
     | Version of string
   
 /// .NET Core SDK install options
-type DotNetCliInstallOptions =
+type DotnetSdkInstallOptions =
     {   
         /// Custom installer obtain (download) options
-        InstallerOptions: DotNetInstallerOptions -> DotNetInstallerOptions
+        InstallerOptions: DotnetSdkInstallerOptions -> DotnetSdkInstallerOptions
         /// .NET Core SDK channel (defaults to normalized installer branch)
         Channel: string option;
         /// .NET Core SDK version
-        Version: DotnetCliVersion;
+        Version: DotnetSdkVersion;
         /// Custom installation directory (for local build installation)
         CustomInstallDir: string option
         /// Architecture
-        Architecture: DotnetCliArchitecture;
+        Architecture: DotnetSdkArchitecture;
         /// Installs just the shared runtime bits, not the entire SDK
         SharedRuntime: bool;
         /// Include symbols in the installation (Switch does not work yet. Symbols zip is not being uploaded yet) 
@@ -129,13 +129,13 @@ type DotNetCliInstallOptions =
 
 
 /// Version shipped with VS2017 (1.0.0 SDK, shared framework 1.0.4 and 1.1.1)
-let NetCore100SdkOptions options: DotNetCliInstallOptions = 
+let NetCore100SdkOptions options: DotnetSdkInstallOptions = 
     { options with
         Version = Version "1.0.0"
     }
 
 /// Released 2017/03/07 (1.0.1 SDK, shared framework 1.0.4 and 1.1.1)
-let NetCore101SdkOptions options: DotNetCliInstallOptions = 
+let NetCore101SdkOptions options: DotnetSdkInstallOptions = 
     { options with
         Version = Version "1.0.1"
     }
@@ -153,7 +153,7 @@ let private boolToFlag value flagParam =
     | false -> ""
 
 /// [omit]
-let private buildDotnetCliInstallArgs (param: DotNetCliInstallOptions) =
+let private buildDotnetSdkInstallArgs (param: DotnetSdkInstallOptions) =
     let versionParamValue = 
         match param.Version with
         | Latest -> "latest"
@@ -165,7 +165,7 @@ let private buildDotnetCliInstallArgs (param: DotNetCliInstallOptions) =
         match param.Channel with
             | Some ch -> ch
             | None -> 
-                let installerOptions = DotNetInstallerOptions.Default |> param.InstallerOptions
+                let installerOptions = DotnetSdkInstallerOptions.Default |> param.InstallerOptions
                 installerOptions.Branch |> replace "/" "-"
 
     let architectureParamValue = 
@@ -192,11 +192,11 @@ let private buildDotnetCliInstallArgs (param: DotNetCliInstallOptions) =
 /// ## Parameters
 ///
 /// - 'setParams' - set installation options
-let DotnetCliInstall setParams =
-    let param = DotNetCliInstallOptions.Default |> setParams  
-    let installScript = DotnetDownloadInstaller param.InstallerOptions
+let DotnetSdkInstall setParams =
+    let param = DotnetSdkInstallOptions.Default |> setParams  
+    let installScript = DotnetSdkDownloadInstaller param.InstallerOptions
 
-    let args = sprintf "-ExecutionPolicy Bypass -NoProfile -NoLogo -NonInteractive -Command \"%s %s; if (-not $?) { exit -1 };\"" installScript (buildDotnetCliInstallArgs param)
+    let args = sprintf "-ExecutionPolicy Bypass -NoProfile -NoLogo -NonInteractive -Command \"%s %s; if (-not $?) { exit -1 };\"" installScript (buildDotnetSdkInstallArgs param)
     let exitCode = 
         ExecProcess (fun info ->
             info.FileName <- "powershell"
@@ -207,7 +207,7 @@ let DotnetCliInstall setParams =
     if exitCode <> 0 then
         // force download new installer script
         traceError ".NET Core SDK install failed, trying to redownload installer..."
-        DotnetDownloadInstaller (param.InstallerOptions >> (fun o -> 
+        DotnetSdkDownloadInstaller (param.InstallerOptions >> (fun o -> 
             { o with 
                 AlwaysDownload = true
             })) |> ignore
@@ -225,7 +225,7 @@ type DotnetOptions =
     }
 
     static member Default = {
-        DotnetCliPath = dotnetCliPath DefaultDotnetCliDir
+        DotnetCliPath = dotnetCliPath DefaultDotnetSdkDir
         WorkingDirectory = currentDirectory
         CustomParams = None
     }

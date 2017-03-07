@@ -5,6 +5,7 @@
 * added shortcut versions helpers for 1.0.0 and 1.0.1 .NET Core SDKs (NetCore100SdkOptions, NetCore101SdkOptions)
 * renamed DotnetCompile to DotnetBuild
 * updated Dotnet* helpers to match current rtw cli options (now based on msbuild)
+* multiple renames to rebrand some DotnetCli helpers to DotnetSdk
 
 #### 1.1.1
 * add preview2 tooling .NET Core 1.0.1 shortcut (Preview2Tooling101Options)
