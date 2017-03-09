@@ -9,13 +9,13 @@ open System.Security.Cryptography
 open System.Text
 
 /// .NET Core SDK default install directory (set to default localappdata dotnet dir). Update this to redirect all tool commands to different location. 
-let mutable DefaultDotnetSdkDir = environVar "LocalAppData" @@ "Microsoft" @@ "dotnet"
+let DefaultDotnetSdkDir = environVar "LocalAppData" @@ "Microsoft" @@ "dotnet"
 
 /// Get dotnet cli executable path
 /// ## Parameters
 ///
 /// - 'dotnetSdkDir' - dotnet cli install directory 
-let private dotnetCliPath dotnetSdkDir = dotnetSdkDir @@ "dotnet.exe"
+let private dotnetCliToolPath dotnetSdkDir = dotnetSdkDir @@ "dotnet.exe"
 
 /// Get .NET Core SDK download uri
 let private getDotnetSdkInstallerUrl branch = sprintf "https://raw.githubusercontent.com/dotnet/cli/%s/scripts/obtain/dotnet-install.ps1" branch
@@ -216,8 +216,8 @@ let DotnetSdkInstall setParams =
 /// dotnet cli command execution options
 type DotnetOptions =
     {
-        /// Dotnet cli executable path
-        DotnetCliPath: string;
+        /// Dotnet sdk install directory
+        DotnetSdkDir: string;
         /// Command working directory
         WorkingDirectory: string;
         /// Custom parameters
@@ -225,7 +225,7 @@ type DotnetOptions =
     }
 
     static member Default = {
-        DotnetCliPath = dotnetCliPath DefaultDotnetSdkDir
+        DotnetSdkDir = DefaultDotnetSdkDir
         WorkingDirectory = currentDirectory
         CustomParams = None
     }
@@ -234,9 +234,11 @@ type DotnetOptions =
 /// Execute raw dotnet cli command
 /// ## Parameters
 ///
-/// - 'options' - common execution options
+/// - 'setOptions' - set dotnet execution options
 /// - 'args' - command arguments
-let Dotnet (options: DotnetOptions) args = 
+let Dotnet (setOptions: DotnetOptions -> DotnetOptions) args = 
+    let options = DotnetOptions.Default |> setOptions    
+
     let errors = new System.Collections.Generic.List<string>()
     let messages = new System.Collections.Generic.List<string>()
     let timeout = TimeSpan.MaxValue
@@ -255,7 +257,7 @@ let Dotnet (options: DotnetOptions) args =
 
     let result = 
         ExecProcessWithLambdas (fun info ->
-            info.FileName <- options.DotnetCliPath
+            info.FileName <- dotnetCliToolPath options.DotnetSdkDir
             info.WorkingDirectory <- options.WorkingDirectory
             info.Arguments <- cmdArgs
         ) timeout true errorF messageF
@@ -287,7 +289,7 @@ type DotnetVerbosity =
 type DotnetRestoreOptions =
     {   
         /// Common tool options
-        Common: DotnetOptions;
+        CommonOptions: DotnetOptions -> DotnetOptions;
         /// Specifies a NuGet package source to use during the restore (-s|--source).
         Source: string option;
         /// Target runtime to restore packages for. (-r|--runtime <RUNTIME_IDENTIFIER>).
@@ -310,7 +312,7 @@ type DotnetRestoreOptions =
 
     /// Parameter default values.
     static member Default = {
-        Common = DotnetOptions.Default
+        CommonOptions = id
         Source = None
         Runtime = None
         Packages = []
@@ -345,7 +347,7 @@ let DotnetRestore setParams project =
     traceStartTask "Dotnet:restore" project
     let param = DotnetRestoreOptions.Default |> setParams    
     let args = sprintf "restore %s %s" project (buildRestoreArgs param)
-    let result = Dotnet param.Common args    
+    let result = Dotnet param.CommonOptions args    
     if not result.OK then failwithf "dotnet restore failed with code %i" result.ExitCode
     traceEndTask "Dotnet:restore" project
 
@@ -367,7 +369,7 @@ let private buildConfigurationArg (param: BuildConfiguration) =
 type DotNetPackOptions =
     {   
         /// Common tool options
-        Common: DotnetOptions;
+        CommonOptions: DotnetOptions -> DotnetOptions;
         /// Pack configuration (--configuration)
         Configuration: BuildConfiguration;
         /// Defines the value for the $(VersionSuffix) property in the project
@@ -390,7 +392,7 @@ type DotNetPackOptions =
 
     /// Parameter default values.
     static member Default = {
-        Common = DotnetOptions.Default
+        CommonOptions = id
         Configuration = Release
         VersionSuffix = None
         BuildBasePath = None
@@ -426,7 +428,7 @@ let DotnetPack setParams project =
     traceStartTask "Dotnet:pack" project
     let param = DotNetPackOptions.Default |> setParams    
     let args = sprintf "pack %s %s" project (buildPackArgs param)
-    let result = Dotnet param.Common args    
+    let result = Dotnet param.CommonOptions args    
     if not result.OK then failwithf "dotnet pack failed with code %i" result.ExitCode
     traceEndTask "Dotnet:pack" project
 
@@ -435,7 +437,7 @@ let DotnetPack setParams project =
 type DotNetPublishOptions =
     {   
         /// Common tool options
-        Common: DotnetOptions;
+        CommonOptions: DotnetOptions -> DotnetOptions;
         /// Pack configuration (--configuration)
         Configuration: BuildConfiguration;
         /// Target framework to compile for (--framework)
@@ -452,7 +454,7 @@ type DotNetPublishOptions =
 
     /// Parameter default values.
     static member Default = {
-        Common = DotnetOptions.Default
+        CommonOptions = id
         Configuration = Release
         Framework = None
         Runtime = None
@@ -482,7 +484,7 @@ let DotnetPublish setParams project =
     traceStartTask "Dotnet:publish" project
     let param = DotNetPublishOptions.Default |> setParams    
     let args = sprintf "publish %s %s" project (buildPublishArgs param)
-    let result = Dotnet param.Common args    
+    let result = Dotnet param.CommonOptions args    
     if not result.OK then failwithf "dotnet publish failed with code %i" result.ExitCode
     traceEndTask "Dotnet:publish" project
 
@@ -491,7 +493,7 @@ let DotnetPublish setParams project =
 type DotNetBuildOptions =
     {   
         /// Common tool options
-        Common: DotnetOptions;
+        CommonOptions: DotnetOptions -> DotnetOptions;
         /// Pack configuration (--configuration)
         Configuration: BuildConfiguration;
         /// Target framework to compile for (--framework)
@@ -512,7 +514,7 @@ type DotNetBuildOptions =
 
     /// Parameter default values.
     static member Default = {
-        Common = DotnetOptions.Default
+        CommonOptions = id
         Configuration = Release
         Framework = None
         Runtime = None
@@ -547,6 +549,6 @@ let DotnetBuild setParams project =
     traceStartTask "Dotnet:build" project
     let param = DotNetBuildOptions.Default |> setParams    
     let args = sprintf "build %s %s" project (buildBuildArgs param)
-    let result = Dotnet param.Common args    
+    let result = Dotnet param.CommonOptions args    
     if not result.OK then failwithf "dotnet build failed with code %i" result.ExitCode
     traceEndTask "Dotnet:build" project
