@@ -1,6 +1,6 @@
 # FAKE.Dotnet
 
-[![NuGet Status](http://img.shields.io/nuget/v/FAKE.dotnet.svg?style=flat)](https://www.nuget.org/packages/FAKE.Dotnet/)
+[![NuGet Status](http://img.shields.io/nuget/v/FAKE.dotnet.svg?style=flat)](https://www.nuget.org/packages/FAKE.Dotnet/) [![MyGet Status](https://buildstats.info/myget/fakedotnet/FAKE.Dotnet)](https://www.myget.org/feed/fakedotnet/package/nuget/Fake.Dotnet)
 
 "FAKE.Dotnet" is FAKE build automation system extension for [.NET Core CLI tools](http://github.com/dotnet/cli). It contains helpers to download and install specific versions .NET Core SDK with CLI. Currently supports only windows.
 
