@@ -7,6 +7,7 @@
 * updated Dotnet* helpers to match current rtw cli options (now based on msbuild)
 * multiple renames to rebrand some DotnetCli helpers to DotnetSdk
 * make CommonOptions function
+* added DotnetMsbuild helper using FAKE msbuild options delegating to dotnet msbuild cli command
 
 #### 1.1.1
 * add preview2 tooling .NET Core 1.0.1 shortcut (Preview2Tooling101Options)

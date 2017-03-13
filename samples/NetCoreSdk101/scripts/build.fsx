@@ -23,7 +23,7 @@ Target "Clean" (fun _ ->
 
 Target "InstallDotnet" (fun _ ->
     // install .NET Core SDK 1.0.1
-    DotnetSdkInstall NetCore101SdkOptions 
+    DotnetSdkInstall SdkVersions.NetCore101
 )
 
 Target "RestorePackages" (fun _ ->

@@ -127,18 +127,20 @@ type DotnetSdkInstallOptions =
         ProxyAddress = None
     }
 
+/// Well known DotnetSdk versions
+type SdkVersions =
 
-/// Version shipped with VS2017 (1.0.0 SDK, shared framework 1.0.4 and 1.1.1)
-let NetCore100SdkOptions options: DotnetSdkInstallOptions = 
-    { options with
-        Version = Version "1.0.0"
-    }
+    /// Version shipped with VS2017 (1.0.0 SDK, shared framework 1.0.4 and 1.1.1)
+    static member NetCore100 options: DotnetSdkInstallOptions = 
+        { options with
+            Version = Version "1.0.0"
+        }
 
-/// Released 2017/03/07 (1.0.1 SDK, shared framework 1.0.4 and 1.1.1)
-let NetCore101SdkOptions options: DotnetSdkInstallOptions = 
-    { options with
-        Version = Version "1.0.1"
-    }
+    /// Released 2017/03/07 (1.0.1 SDK, shared framework 1.0.4 and 1.1.1)
+    static member NetCore101 options: DotnetSdkInstallOptions = 
+        { options with
+            Version = Version "1.0.1"
+        }
 
 /// [omit]
 let private optionToParam option paramFormat =
@@ -544,11 +546,27 @@ let private buildBuildArgs (param: DotNetBuildOptions) =
 /// ## Parameters
 ///
 /// - 'setParams' - set compile command parameters
-/// - 'project' - project to compile
-let DotnetBuild setParams project =    
-    traceStartTask "Dotnet:build" project
+/// - 'projectFile' - projectFile to build
+let DotnetBuild setParams projectFile =    
+    traceStartTask "Dotnet:build" projectFile
     let param = DotNetBuildOptions.Default |> setParams    
-    let args = sprintf "build %s %s" project (buildBuildArgs param)
+    let args = sprintf "build %s %s" projectFile (buildBuildArgs param)
     let result = Dotnet param.CommonOptions args    
     if not result.OK then failwithf "dotnet build failed with code %i" result.ExitCode
-    traceEndTask "Dotnet:build" project
+    traceEndTask "Dotnet:build" projectFile
+
+
+/// Execute dotnet msbuild command using FAKE msbuild options
+/// ## Parameters
+///
+/// - 'setMsbuildParams' - set msbuild command parameters
+/// - 'setOptions' - set dotnet execution options
+/// - 'project' - project to compile
+let DotnetMsbuild setMsbuildParams setOptions projectFile = 
+    traceStartTask "Dotnet:msbuild" projectFile
+
+    // build args
+    let args = MSBuildDefaults |> setMsbuildParams |> serializeMSBuildParams
+    let result = Dotnet setOptions (sprintf "msbuild %s %s" projectFile args) 
+    if not result.OK then failwithf "dotnet msbuild failed with code %i" result.ExitCode
+    traceEndTask "Dotnet:msbuild" projectFile
