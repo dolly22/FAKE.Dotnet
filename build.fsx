@@ -19,6 +19,35 @@ let buildDir = "./artifacts/build"
 let mutable version : SemVerHelper.SemVerInfo option = None
 let mutable currentGitSha : string = ""
 
+let appendMygetPrerelease (semver: SemVerInfo, comitsSinceCreated: string) =
+    let buildRunner = environVar "BuildRunner"
+    let mygetBuild = buildRunner <> null && buildRunner.ToLowerInvariant() = "myget"    
+
+    if mygetBuild then
+        // use myget coutner
+        let buildCounter = environVar "BuildCounter"
+        let buildCounterFixed = buildCounter.PadLeft(5, '0')             
+        
+        let versionWithBuild =
+            match semver.PreRelease with
+                | Some ver -> sprintf "%s-%s" ver.Origin buildCounterFixed
+                | _ -> sprintf "ci-%s" buildCounterFixed
+
+        let prereleaseInfo = 
+            Some {
+                PreRelease.Origin = versionWithBuild
+                Name = versionWithBuild
+                Number = None
+            }
+        
+        tracefn "[myget] Using semver prerelease: %A" versionWithBuild
+        { semver with PreRelease = prereleaseInfo }  
+    else
+        // use default handling, append prerelease counter only when specified
+        tracefn "Using local build versioning"
+        (semver, comitsSinceCreated) 
+            |> appendPreReleaseBuildNumber 3 
+  
 Target "Clean" (fun _ ->
     !! "artifacts" ++ "src/*/bin"
         |> DeleteDirs
@@ -27,7 +56,7 @@ Target "Clean" (fun _ ->
 Target "UpdateVersion" (fun _ ->   
     let semver = 
         getSemverInfoDefault 
-        |> appendPreReleaseBuildNumber 3 
+        |> appendMygetPrerelease
 
     version <- Some semver        
     currentGitSha <- getCurrentSHA1 currentDirectory
@@ -39,7 +68,8 @@ Target "UpdateVersion" (fun _ ->
     CreateFSharpAssemblyInfo "src/SolutionInfo.fs"
         [   Attribute.Version assemblyVersion
             Attribute.FileVersion fileVersion
-            Attribute.InformationalVersion (semver.ToString()) ]
+            Attribute.InformationalVersion (semver.ToString()) 
+            Attribute.Metadata("githash", currentGitSha) ]
 
     tracefn "Using version: %A" version.Value
 )
