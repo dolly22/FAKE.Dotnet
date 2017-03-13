@@ -27,7 +27,7 @@ There is sample project and build script for [1.0.1 SDK](https://github.com/doll
 open Fake.Dotnet
 
 Target "Initialize" (fun _ ->
-    DotnetSdkInstall NetCore101SdkOptions
+    DotnetSdkInstall SdkVersions.NetCore101
 )
 
 Target "BuildProjects" (fun _ ->
