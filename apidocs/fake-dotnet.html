@@ -69,22 +69,6 @@
         </tr>
         <tr>
           <td class="type-name">
-            <a href="fake-dotnet-dotnetcliinstalloptions.html">DotNetCliInstallOptions</a>
-          </td>
-          <td class="xmldoc"><p>.NET Core SDK install options</p>
-
-</td>
-        </tr>
-        <tr>
-          <td class="type-name">
-            <a href="fake-dotnet-dotnetinstalleroptions.html">DotNetInstallerOptions</a>
-          </td>
-          <td class="xmldoc"><p>.NET Core SDK installer download options</p>
-
-</td>
-        </tr>
-        <tr>
-          <td class="type-name">
             <a href="fake-dotnet-dotnetpackoptions.html">DotNetPackOptions</a>
           </td>
           <td class="xmldoc"><p>dotnet pack command options</p>
@@ -96,22 +80,6 @@
             <a href="fake-dotnet-dotnetpublishoptions.html">DotNetPublishOptions</a>
           </td>
           <td class="xmldoc"><p>dotnet publish command options</p>
-
-</td>
-        </tr>
-        <tr>
-          <td class="type-name">
-            <a href="fake-dotnet-dotnetcliarchitecture.html">DotnetCliArchitecture</a>
-          </td>
-          <td class="xmldoc"><p>.NET Core SDK architecture</p>
-
-</td>
-        </tr>
-        <tr>
-          <td class="type-name">
-            <a href="fake-dotnet-dotnetcliversion.html">DotnetCliVersion</a>
-          </td>
-          <td class="xmldoc"><p>.NET Core SDK version (used to specify version when installing .NET Core SDK)</p>
 
 </td>
         </tr>
@@ -133,9 +101,49 @@
         </tr>
         <tr>
           <td class="type-name">
-            <a href="fake-dotnet-nugetrestoreverbosity.html">NugetRestoreVerbosity</a>
+            <a href="fake-dotnet-dotnetsdkarchitecture.html">DotnetSdkArchitecture</a>
+          </td>
+          <td class="xmldoc"><p>.NET Core SDK architecture</p>
+
+</td>
+        </tr>
+        <tr>
+          <td class="type-name">
+            <a href="fake-dotnet-dotnetsdkinstalloptions.html">DotnetSdkInstallOptions</a>
+          </td>
+          <td class="xmldoc"><p>.NET Core SDK install options</p>
+
+</td>
+        </tr>
+        <tr>
+          <td class="type-name">
+            <a href="fake-dotnet-dotnetsdkinstalleroptions.html">DotnetSdkInstallerOptions</a>
+          </td>
+          <td class="xmldoc"><p>.NET Core SDK installer download options</p>
+
+</td>
+        </tr>
+        <tr>
+          <td class="type-name">
+            <a href="fake-dotnet-dotnetsdkversion.html">DotnetSdkVersion</a>
+          </td>
+          <td class="xmldoc"><p>.NET Core SDK version (used to specify version when installing .NET Core SDK)</p>
+
+</td>
+        </tr>
+        <tr>
+          <td class="type-name">
+            <a href="fake-dotnet-dotnetverbosity.html">DotnetVerbosity</a>
           </td>
           <td class="xmldoc"><p>dotnet restore verbosity</p>
+
+</td>
+        </tr>
+        <tr>
+          <td class="type-name">
+            <a href="fake-dotnet-sdkversions.html">SdkVersions</a>
+          </td>
+          <td class="xmldoc"><p>Well known DotnetSdk versions</p>
 
 </td>
         </tr>
@@ -153,15 +161,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '13', 13)" onmouseover="showTip(event, '13', 13)">
-            DefaultDotnetCliDir 
+          <code onmouseout="hideTip(event, '1', 1)" onmouseover="showTip(event, '1', 1)">
+            DefaultDotnetSdkDir 
           </code>
-          <div class="tip" id="13">
+          <div class="tip" id="1">
             <strong>Signature:</strong> string<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/d8140b41d9f9fbc43b0cd0563b56f45ea9d8a4c1/src/Fake.Dotnet/Dotnet.fs#L13-13" class="github-link">
+            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/e503597323b50b460652820d7aa74778942fe44b/src/Fake.Dotnet/Dotnet.fs#L12-12" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -173,22 +181,22 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '14', 14)" onmouseover="showTip(event, '14', 14)">
-            Dotnet options args
+          <code onmouseout="hideTip(event, '2', 2)" onmouseover="showTip(event, '2', 2)">
+            Dotnet setOptions args
           </code>
-          <div class="tip" id="14">
-            <strong>Signature:</strong> options:DotnetOptions -&gt; args:string -&gt; ProcessResult<br />
+          <div class="tip" id="2">
+            <strong>Signature:</strong> setOptions:(DotnetOptions -&gt; DotnetOptions) -&gt; args:string -&gt; ProcessResult<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/d8140b41d9f9fbc43b0cd0563b56f45ea9d8a4c1/src/Fake.Dotnet/Dotnet.fs#L226-226" class="github-link">
+            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/e503597323b50b460652820d7aa74778942fe44b/src/Fake.Dotnet/Dotnet.fs#L241-241" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
           <p>Execute raw dotnet cli command</p>
 <h2>Parameters</h2>
 <ul>
-<li>'options' - common execution options</li>
+<li>'setOptions' - set dotnet execution options</li>
 <li>'args' - command arguments</li>
 </ul>
 
@@ -198,22 +206,23 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '15', 15)" onmouseover="showTip(event, '15', 15)">
-            DotnetCliInstall setParams
+          <code onmouseout="hideTip(event, '3', 3)" onmouseover="showTip(event, '3', 3)">
+            DotnetBuild setParams projectFile
           </code>
-          <div class="tip" id="15">
-            <strong>Signature:</strong> setParams:(DotNetCliInstallOptions -&gt; DotNetCliInstallOptions) -&gt; unit<br />
+          <div class="tip" id="3">
+            <strong>Signature:</strong> setParams:(DotNetBuildOptions -&gt; DotNetBuildOptions) -&gt; projectFile:string -&gt; unit<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/d8140b41d9f9fbc43b0cd0563b56f45ea9d8a4c1/src/Fake.Dotnet/Dotnet.fs#L182-182" class="github-link">
+            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/e503597323b50b460652820d7aa74778942fe44b/src/Fake.Dotnet/Dotnet.fs#L550-550" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Install .NET Core SDK if required</p>
+          <p>Execute dotnet build command</p>
 <h2>Parameters</h2>
 <ul>
-<li>'setParams' - set installation options</li>
+<li>'setParams' - set compile command parameters</li>
+<li>'projectFile' - projectFile to build</li>
 </ul>
 
 
@@ -222,22 +231,23 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '16', 16)" onmouseover="showTip(event, '16', 16)">
-            DotnetCompile setParams project
+          <code onmouseout="hideTip(event, '4', 4)" onmouseover="showTip(event, '4', 4)">
+            DotnetMsbuild (...)
           </code>
-          <div class="tip" id="16">
-            <strong>Signature:</strong> setParams:(DotNetBuildOptions -&gt; DotNetBuildOptions) -&gt; project:string -&gt; unit<br />
+          <div class="tip" id="4">
+            <strong>Signature:</strong> setMsbuildParams:(MSBuildParams -&gt; MSBuildParams) -&gt; setOptions:(DotnetOptions -&gt; DotnetOptions) -&gt; projectFile:string -&gt; unit<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/d8140b41d9f9fbc43b0cd0563b56f45ea9d8a4c1/src/Fake.Dotnet/Dotnet.fs#L506-506" class="github-link">
+            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/e503597323b50b460652820d7aa74778942fe44b/src/Fake.Dotnet/Dotnet.fs#L565-565" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Execute dotnet build command</p>
+          <p>Execute dotnet msbuild command using FAKE msbuild options</p>
 <h2>Parameters</h2>
 <ul>
-<li>'setParams' - set compile command parameters</li>
+<li>'setMsbuildParams' - set msbuild command parameters</li>
+<li>'setOptions' - set dotnet execution options</li>
 <li>'project' - project to compile</li>
 </ul>
 
@@ -247,39 +257,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '17', 17)" onmouseover="showTip(event, '17', 17)">
-            DotnetDownloadInstaller setParams
-          </code>
-          <div class="tip" id="17">
-            <strong>Signature:</strong> setParams:(DotNetInstallerOptions -&gt; DotNetInstallerOptions) -&gt; string<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/d8140b41d9f9fbc43b0cd0563b56f45ea9d8a4c1/src/Fake.Dotnet/Dotnet.fs#L59-59" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Download .NET Core SDK installer</p>
-<h2>Parameters</h2>
-<ul>
-<li>'setParams' - set download installer options</li>
-</ul>
-
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '18', 18)" onmouseover="showTip(event, '18', 18)">
+          <code onmouseout="hideTip(event, '5', 5)" onmouseover="showTip(event, '5', 5)">
             DotnetPack setParams project
           </code>
-          <div class="tip" id="18">
+          <div class="tip" id="5">
             <strong>Signature:</strong> setParams:(DotNetPackOptions -&gt; DotNetPackOptions) -&gt; project:string -&gt; unit<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/d8140b41d9f9fbc43b0cd0563b56f45ea9d8a4c1/src/Fake.Dotnet/Dotnet.fs#L389-389" class="github-link">
+            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/e503597323b50b460652820d7aa74778942fe44b/src/Fake.Dotnet/Dotnet.fs#L429-429" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -296,15 +282,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '19', 19)" onmouseover="showTip(event, '19', 19)">
+          <code onmouseout="hideTip(event, '6', 6)" onmouseover="showTip(event, '6', 6)">
             DotnetPublish setParams project
           </code>
-          <div class="tip" id="19">
+          <div class="tip" id="6">
             <strong>Signature:</strong> setParams:(DotNetPublishOptions -&gt; DotNetPublishOptions) -&gt; project:string -&gt; unit<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/d8140b41d9f9fbc43b0cd0563b56f45ea9d8a4c1/src/Fake.Dotnet/Dotnet.fs#L449-449" class="github-link">
+            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/e503597323b50b460652820d7aa74778942fe44b/src/Fake.Dotnet/Dotnet.fs#L485-485" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -321,19 +307,19 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '20', 20)" onmouseover="showTip(event, '20', 20)">
+          <code onmouseout="hideTip(event, '7', 7)" onmouseover="showTip(event, '7', 7)">
             DotnetRestore setParams project
           </code>
-          <div class="tip" id="20">
+          <div class="tip" id="7">
             <strong>Signature:</strong> setParams:(DotnetRestoreOptions -&gt; DotnetRestoreOptions) -&gt; project:string -&gt; unit<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/d8140b41d9f9fbc43b0cd0563b56f45ea9d8a4c1/src/Fake.Dotnet/Dotnet.fs#L324-324" class="github-link">
+            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/e503597323b50b460652820d7aa74778942fe44b/src/Fake.Dotnet/Dotnet.fs#L348-348" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Execute dotnet restore command</p>
+          <p>Execute dotnet restore (Restore dependencies specified in the .NET project)</p>
 <h2>Parameters</h2>
 <ul>
 <li>'setParams' - set restore command parameters</li>
@@ -346,22 +332,22 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '21', 21)" onmouseover="showTip(event, '21', 21)">
-            GlobalJsonSdk project
+          <code onmouseout="hideTip(event, '8', 8)" onmouseover="showTip(event, '8', 8)">
+            DotnetSdkDownloadInstaller setParams
           </code>
-          <div class="tip" id="21">
-            <strong>Signature:</strong> project:string -&gt; string<br />
+          <div class="tip" id="8">
+            <strong>Signature:</strong> setParams:(DotnetSdkInstallerOptions -&gt; DotnetSdkInstallerOptions) -&gt; string<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/d8140b41d9f9fbc43b0cd0563b56f45ea9d8a4c1/src/Fake.Dotnet/Dotnet.fs#L518-518" class="github-link">
+            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/e503597323b50b460652820d7aa74778942fe44b/src/Fake.Dotnet/Dotnet.fs#L58-58" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>get sdk version from global.json</p>
+          <p>Download .NET Core SDK installer</p>
 <h2>Parameters</h2>
 <ul>
-<li>'project' - global.json path</li>
+<li>'setParams' - set download installer options</li>
 </ul>
 
 
@@ -370,19 +356,23 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '22', 22)" onmouseover="showTip(event, '22', 22)">
-            Preview2ToolingOptions options
+          <code onmouseout="hideTip(event, '9', 9)" onmouseover="showTip(event, '9', 9)">
+            DotnetSdkInstall setParams
           </code>
-          <div class="tip" id="22">
-            <strong>Signature:</strong> options:DotNetCliInstallOptions -&gt; DotNetCliInstallOptions<br />
+          <div class="tip" id="9">
+            <strong>Signature:</strong> setParams:(DotnetSdkInstallOptions -&gt; DotnetSdkInstallOptions) -&gt; unit<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/d8140b41d9f9fbc43b0cd0563b56f45ea9d8a4c1/src/Fake.Dotnet/Dotnet.fs#L123-123" class="github-link">
+            <a href="https://github.com/dolly22/FAKE.Dotnet/blob/e503597323b50b460652820d7aa74778942fe44b/src/Fake.Dotnet/Dotnet.fs#L197-197" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>.NET Core SDK install options preconfigured for preview2 tooling</p>
+          <p>Install .NET Core SDK if required</p>
+<h2>Parameters</h2>
+<ul>
+<li>'setParams' - set installation options</li>
+</ul>
 
 
         </td>
